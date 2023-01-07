@@ -33,9 +33,10 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
         val database = Firebase.database
         val myRef = database.getReference("message")
+        var textMessage = binding.inputMessage.text.toString()
 
         binding.layoutSend.setOnClickListener{
-            myRef.child(myRef.push().key ?: "null").setValue(User(auth.currentUser?.displayName, binding.inputMessage.text.toString()))
+            myRef.child(myRef.push().key ?: "null").setValue(User(auth.currentUser?.displayName, textMessage))
         }
         onChangeListener(myRef)
         initRCView()

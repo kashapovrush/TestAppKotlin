@@ -16,34 +16,42 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.kashapovrush.godrivekotlin.R
 import com.kashapovrush.godrivekotlin.databinding.ActivitySignInBinding
+import com.kashapovrush.godrivekotlin.utilities.Constants
 
 class SignInActivity : AppCompatActivity() {
 
-    lateinit var launcher : ActivityResultLauncher<Intent>
-    lateinit var auth : FirebaseAuth
-    lateinit var binding: ActivitySignInBinding
+    private lateinit var auth : FirebaseAuth
+    private lateinit var binding: ActivitySignInBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = Firebase.auth
-        launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
+        binding.buttonSignIn.setOnClickListener {
+            signInWithGoogle()
+        }
+        checkAuthState()
+    }
+
+    private fun signInWithGoogle() {
+        val signInClient = getClient().signInIntent
+        startActivityForResult(signInClient, Constants.KEY_SIGN_IN)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Constants.KEY_SIGN_IN) {
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
                 if (account != null) {
                     firebaseAuthWithGoogle(account.idToken!!)
                 }
-            } catch (e : ApiException) {
+            } catch (e: ApiException) {
                 Log.d("myLog", "Api exception")
             }
         }
-
-        binding.buttonSignIn.setOnClickListener {
-            signInWithGoogle()
-        }
-        checkAuthState()
     }
 
     private fun getClient() : GoogleSignInClient {
@@ -55,14 +63,9 @@ class SignInActivity : AppCompatActivity() {
         return GoogleSignIn.getClient(this, gso)
     }
 
-    private fun signInWithGoogle() {
-        val signInClient = getClient()
-        launcher.launch(signInClient.signInIntent)
-    }
-
     private fun firebaseAuthWithGoogle(idToken : String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential).addOnCompleteListener{
+        val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(firebaseCredential).addOnCompleteListener{
             if (it.isSuccessful) {
                 Log.d("myLog", "Google sign in done")
                 checkAuthState()
