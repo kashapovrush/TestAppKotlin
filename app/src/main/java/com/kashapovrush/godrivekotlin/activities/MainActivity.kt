@@ -21,9 +21,9 @@ import com.kashapovrush.godrivekotlin.models.User
 import com.squareup.picasso.Picasso
 
 class MainActivity : AppCompatActivity() {
-    lateinit var binding : ActivityMainBinding
-    lateinit var auth : FirebaseAuth
-    lateinit var adapter : ChatAdapter
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var auth: FirebaseAuth
+    private lateinit var adapter: ChatAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,10 +33,16 @@ class MainActivity : AppCompatActivity() {
         setUpActionBar()
         val database = Firebase.database
         val myRef = database.getReference("message")
-        var textMessage = binding.inputMessage.text.toString()
 
-        binding.layoutSend.setOnClickListener{
-            myRef.child(myRef.push().key ?: "null").setValue(User(auth.currentUser?.displayName, textMessage))
+        binding.layoutSend.setOnClickListener {
+            if (binding.inputMessage.text.toString() != "") {
+                myRef.child(myRef.push().key ?: "null").setValue(
+                    User(
+                        auth.currentUser?.displayName,
+                        binding.inputMessage.text.toString()
+                    )
+                )
+            }
         }
         onChangeListener(myRef)
         initRCView()
@@ -44,21 +50,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRCView() = with(binding) {
         adapter = ChatAdapter()
-        chatRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
+        var linearLayoutManager = LinearLayoutManager(this@MainActivity)
+        linearLayoutManager.stackFromEnd = true
+        chatRecyclerView.layoutManager = linearLayoutManager
         chatRecyclerView.adapter = adapter
     }
 
-    private fun onChangeListener(dRef : DatabaseReference) {
+    private fun onChangeListener(dRef: DatabaseReference) {
         dRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = ArrayList<User>()
-                for (s in snapshot.children){
+                for (s in snapshot.children) {
                     val user = s.getValue(User::class.java)
                     if (user != null) {
                         list.add(user)
                     }
                 }
                 adapter.submitList(list)
+                binding.inputMessage.text = null
             }
 
             override fun onCancelled(error: DatabaseError) {
