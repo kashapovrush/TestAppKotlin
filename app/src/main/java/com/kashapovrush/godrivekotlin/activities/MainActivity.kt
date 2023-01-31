@@ -1,5 +1,6 @@
 package com.kashapovrush.godrivekotlin.activities
 
+import android.content.Intent
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -58,6 +59,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onChangeListener(dRef: DatabaseReference) {
         dRef.addValueEventListener(object : ValueEventListener {
+
             override fun onDataChange(snapshot: DataSnapshot) {
                 val list = ArrayList<User>()
                 for (s in snapshot.children) {
@@ -71,9 +73,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
-
         })
     }
 
@@ -86,6 +86,10 @@ class MainActivity : AppCompatActivity() {
         if (item.itemId == R.id.sign_out) {
             auth.signOut()
             finish()
+        }
+        if (item.itemId == R.id.data_user) {
+            val intent = Intent(this, UserDataActivity::class.java)
+            startActivity(intent)
         }
         return super.onOptionsItemSelected(item)
     }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">goDrive</string>
     <string name="sign_out">Sign out</string>
+    <string name="data_user">Данные</string>
 </resources>

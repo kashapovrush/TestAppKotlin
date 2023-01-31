@@ -4,7 +4,6 @@ import android.content.Intent
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.FirebaseException
@@ -13,14 +12,21 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import com.kashapovrush.godrivekotlin.activities.MainActivity
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_ID
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PHONE_NUMBER
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_USERNAME
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthActivity(private val signInActivity: SignInActivity, val view: EditText) {
 
     private var auth: FirebaseAuth = Firebase.auth
     private var id: String = ""
+    private var database: DatabaseReference = FirebaseDatabase.getInstance().reference
 
     private var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks =
         object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -54,10 +60,22 @@ class PhoneAuthActivity(private val signInActivity: SignInActivity, val view: Ed
                 if (view.text.toString().length == 6) {
                     val credential =
                         PhoneAuthProvider.getCredential(id, view.text.toString())
-                    auth.signInWithCredential(credential).addOnCompleteListener {
+                    auth.signInWithCredential(credential).addOnCompleteListener { it ->
                         if (it.isSuccessful) {
-                            val intent = Intent(signInActivity, MainActivity::class.java)
-                            signInActivity.startActivity(intent)
+                            val uid = auth.currentUser?.uid.toString()
+                            val dataMap = mutableMapOf<String, Any>()
+                            dataMap[KEY_CHILD_ID] = uid
+                            dataMap[KEY_USERNAME] = uid
+                            database.child(KEY_COLLECTION_USERS).child(uid).updateChildren(dataMap)
+                                .addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        val intent =
+                                            Intent(signInActivity, MainActivity::class.java)
+                                        signInActivity.startActivity(intent)
+                                    } else {
+                                        toastShow(it.exception?.message.toString())
+                                    }
+                                }
                         } else {
                             toastShow("No no")
                         }
@@ -84,7 +102,6 @@ class PhoneAuthActivity(private val signInActivity: SignInActivity, val view: Ed
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
-
 
 
     private fun toastShow(message: String) {
