@@ -13,7 +13,7 @@ class ChatAdapter : ListAdapter<User, ChatAdapter.ItemHolder>(ItemComparator()) 
     class ItemHolder(private val binding: UserListItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(user : User) = with(binding) {
             textMessage.text = user.message
-            userName.text = user.name
+            userName.text = user.username
         }
         companion object {
             fun create(parent: ViewGroup) : ItemHolder {

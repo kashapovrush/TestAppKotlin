@@ -2,4 +2,5 @@
     <string name="app_name">goDrive</string>
     <string name="sign_out">Sign out</string>
     <string name="data_user">Данные</string>
+    <string name="add_photo">Добавить фото</string>
 </resources>

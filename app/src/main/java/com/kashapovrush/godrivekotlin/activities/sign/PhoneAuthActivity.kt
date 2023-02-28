@@ -18,8 +18,7 @@ import com.google.firebase.ktx.Firebase
 import com.kashapovrush.godrivekotlin.activities.MainActivity
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_ID
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PHONE_NUMBER
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_USERNAME
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_USERNAME
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthActivity(private val signInActivity: SignInActivity, val view: EditText) {
@@ -65,7 +64,7 @@ class PhoneAuthActivity(private val signInActivity: SignInActivity, val view: Ed
                             val uid = auth.currentUser?.uid.toString()
                             val dataMap = mutableMapOf<String, Any>()
                             dataMap[KEY_CHILD_ID] = uid
-                            dataMap[KEY_USERNAME] = uid
+                            dataMap[KEY_CHILD_USERNAME] = uid
                             database.child(KEY_COLLECTION_USERS).child(uid).updateChildren(dataMap)
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {

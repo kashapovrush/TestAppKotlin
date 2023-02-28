@@ -1,6 +1,6 @@
 package com.kashapovrush.godrivekotlin.models
 
 data class User(
-    var name: String? = null,
-    var message: String? = null
+    var username: String = "",
+    var message: String = ""
 )

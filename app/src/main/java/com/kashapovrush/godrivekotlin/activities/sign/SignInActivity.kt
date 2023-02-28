@@ -33,7 +33,7 @@ class SignInActivity : AppCompatActivity() {
         binding.googleSignIn.setOnClickListener {
             googleSignInActivity.signInWithGoogle()
         }
-//        emailPasswordActivity = EmailPasswordActivity(this)
+
         binding.emailSignIn.setOnClickListener {
             if (binding.number.text.toString().isEmpty()) {
                 toastShow("Enter number")
