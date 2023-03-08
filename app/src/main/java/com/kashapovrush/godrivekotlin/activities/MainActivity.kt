@@ -33,10 +33,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = Firebase.auth
+        user = User()
         setUpActionBar()
         val database = Firebase.database
         reference = FirebaseDatabase.getInstance().reference
-        user = User()
         val myRef = database.getReference(KEY_PREFERENCE_NAME)
         initUser()
         binding.layoutSend.setOnClickListener {
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
                 myRef.child(myRef.push().key ?: "null").setValue(
                     User(
                         user.username,
-                        binding.inputMessage.text.toString()
+                        binding.inputMessage.text.toString(), user.photoUrl
                     )
                 )
             }

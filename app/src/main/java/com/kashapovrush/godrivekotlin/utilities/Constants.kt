@@ -9,5 +9,7 @@ class Constants {
         const val KEY_CHILD_ID = "id"
         const val KEY_CHILD_PHONE_NUMBER = "phone"
         const val KEY_CHILD_USERNAME = "username"
+        const val KEY_PROFILE_IMAGE = "profile_image"
+        const val KEY_PHOTO_URL = "photoUrl"
     }
 }
