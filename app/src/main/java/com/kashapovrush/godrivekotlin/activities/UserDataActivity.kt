@@ -10,10 +10,10 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrivekotlin.databinding.ActivityUserDataBinding
 import com.kashapovrush.godrivekotlin.models.User
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_USERNAME
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERNAMES
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PHOTO_URL
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PROFILE_IMAGE
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
@@ -51,14 +51,12 @@ class UserDataActivity : AppCompatActivity() {
         binding.layoutImage.setOnClickListener {
             changePhotoUser()
         }
-
-
     }
 
     private fun changePhotoUser() {
         CropImage.activity()
             .setAspectRatio(1, 1)
-            .setRequestedSize(600, 600)
+            .setRequestedSize(200, 200)
             .setCropShape(CropImageView.CropShape.OVAL)
             .start(this)
     }
@@ -67,15 +65,16 @@ class UserDataActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         val uid = auth.currentUser?.uid.toString()
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
-            && data != null) {
+            && data != null
+        ) {
             val uri = CropImage.getActivityResult(data).uri
             val path = storage.child(KEY_PROFILE_IMAGE).child(uid)
-            path.putFile(uri).addOnCompleteListener{ task1 ->
+            path.putFile(uri).addOnCompleteListener { task1 ->
                 if (task1.isSuccessful) {
                     path.downloadUrl.addOnCompleteListener { task2 ->
                         if (task2.isSuccessful) {
                             val photoUrl = task2.result.toString()
-                            database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_PHOTO_URL)
+                            database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_FILE_URL)
                                 .setValue(photoUrl)
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {
@@ -98,7 +97,7 @@ class UserDataActivity : AppCompatActivity() {
     private fun initDataUser() {
         val uid = auth.currentUser?.uid.toString()
         database.child(KEY_COLLECTION_USERS).child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener{
+            .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     user = snapshot.getValue(User::class.java) ?: User()
                     binding.inputName.setText(user.username)
@@ -120,7 +119,7 @@ class UserDataActivity : AppCompatActivity() {
             toastShow("Введите username")
         } else {
             database.child(KEY_COLLECTION_USERNAMES)
-                .addListenerForSingleValueEvent(object : ValueEventListener{
+                .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.hasChild(newUsername)) {
                             toastShow("Такой пользователь уже существует")
@@ -154,16 +153,16 @@ class UserDataActivity : AppCompatActivity() {
                 if (it.isSuccessful) {
                     toastShow("Данные обновлены")
                     deletedOldUsername()
-            } else {
+                } else {
                     toastShow("Error")
                 }
-        }
+            }
     }
 
     private fun deletedOldUsername() {
         database.child(KEY_COLLECTION_USERNAMES).child(user.username).removeValue()
             .addOnCompleteListener {
-                if(it.isSuccessful) {
+                if (it.isSuccessful) {
                     toastShow("Успешно")
                     user.username = newUsername
                 }
