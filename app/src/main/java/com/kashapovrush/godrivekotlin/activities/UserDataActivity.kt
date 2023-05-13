@@ -2,8 +2,14 @@ package com.kashapovrush.godrivekotlin.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -11,10 +17,13 @@ import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrivekotlin.databinding.ActivityUserDataBinding
 import com.kashapovrush.godrivekotlin.models.User
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_USERNAME
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CITY
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERNAMES
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PREFERENCE_NAME
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PROFILE_IMAGE
+import com.kashapovrush.godrivekotlin.utilities.PreferenceManager
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -28,6 +37,9 @@ class UserDataActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var user: User
     private lateinit var newUsername: String
+    private lateinit var selectCity: Spinner
+    private lateinit var preferenceManager: PreferenceManager
+    val listCity = arrayOf("Выберите город", "Туймазы", "Октябрьский", "Шаран", "Кандры")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +49,41 @@ class UserDataActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance().reference
         storage = FirebaseStorage.getInstance().reference
         auth = FirebaseAuth.getInstance()
-
+        preferenceManager = PreferenceManager(applicationContext)
         initDataUser()
+        selectCity = binding.selectCity
+        var arrayAdapter = ArrayAdapter<String>(
+            this@UserDataActivity,
+            android.R.layout.simple_spinner_dropdown_item,
+            listCity
+        )
+        selectCity.adapter = arrayAdapter
+        selectCity.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val uid = auth.currentUser?.uid.toString()
+                if (listCity[position] != listCity[0]) {
+                    database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_CITY)
+                        .setValue(listCity[position]).addOnCompleteListener {
+                            if (it.isSuccessful) {
+                                preferenceManager.putString(KEY_PREFERENCE_NAME, listCity[position])
+                                user.city = listCity[position]
+                            }
+                        }
+
+
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+        }
+
         binding.saveData.setOnClickListener {
             change()
         }
@@ -97,10 +142,11 @@ class UserDataActivity : AppCompatActivity() {
     private fun initDataUser() {
         val uid = auth.currentUser?.uid.toString()
         database.child(KEY_COLLECTION_USERS).child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     user = snapshot.getValue(User::class.java) ?: User()
                     binding.inputName.setText(user.username)
+                    binding.choiseCity.text = user.city
                     Picasso.get()
                         .load(user.photoUrl)
                         .placeholder(R.drawable.common_full_open_on_phone)
@@ -114,19 +160,16 @@ class UserDataActivity : AppCompatActivity() {
     }
 
     private fun change() {
-        newUsername = binding.inputName.text.toString().toLowerCase(Locale.getDefault())
+        val uid = auth.currentUser?.uid.toString()
+        newUsername = binding.inputName.text.toString()
         if (newUsername.isEmpty()) {
             toastShow("Введите username")
         } else {
             database.child(KEY_COLLECTION_USERNAMES)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot.hasChild(newUsername)) {
-                            toastShow("Такой пользователь уже существует")
-                        } else {
                             changeUsername()
                         }
-                    }
 
                     override fun onCancelled(error: DatabaseError) {
                     }

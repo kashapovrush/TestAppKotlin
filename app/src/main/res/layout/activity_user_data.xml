@@ -36,22 +36,65 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/layout_image" />
 
+   <androidx.appcompat.widget.LinearLayoutCompat
+       android:id="@+id/bloc_change_city"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="@dimen/_14sdp"
+       android:layout_marginStart="@dimen/_13sdp"
+       android:layout_marginEnd="@dimen/_13sdp"
+       app:layout_constraintTop_toBottomOf="@id/input_name"
+       app:layout_constraintEnd_toEndOf="parent"
+       app:layout_constraintStart_toStartOf="parent"
+       >
+
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textSize="@dimen/_16ssp"
+           android:text="Ваш город: "
+           />
+       <TextView
+           android:id="@+id/choise_city"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:paddingStart="@dimen/_13sdp"
+           android:textSize="@dimen/_16ssp"
+           android:textStyle="bold"
+           android:text="Не выбран"
+           />
+
+   </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <Spinner
+        android:id="@+id/select_city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_13sdp"
+        android:layout_marginEnd="@dimen/_13sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        app:layout_constraintTop_toBottomOf="@id/bloc_change_city"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
     <Button
         android:id="@+id/save_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Save"
-        android:layout_margin="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:layout_marginRight="@dimen/_50sdp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_name" />
+        app:layout_constraintTop_toBottomOf="@id/select_city" />
 
     <Button
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_14sdp"
+        android:layout_marginStart="@dimen/_50sdp"
         android:text="Back"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_data" />
+        app:layout_constraintTop_toBottomOf="@+id/select_city" />
 </androidx.constraintlayout.widget.ConstraintLayout>

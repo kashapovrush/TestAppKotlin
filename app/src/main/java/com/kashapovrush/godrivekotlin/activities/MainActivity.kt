@@ -12,6 +12,8 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,6 +30,7 @@ import com.kashapovrush.godrivekotlin.activities.sign.SignInActivity
 import com.kashapovrush.godrivekotlin.adapter.ChatAdapter
 import com.kashapovrush.godrivekotlin.databinding.ActivityMainBinding
 import com.kashapovrush.godrivekotlin.models.User
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CITY
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_MESSAGE
@@ -37,6 +40,7 @@ import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_TYPE_MES
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.TYPE_TEXT
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.TYPE_VOICE
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.mainActivity
+import com.kashapovrush.godrivekotlin.utilities.PreferenceManager
 import com.kashapovrush.godrivekotlin.utilities.ViewFactory
 import com.kashapovrush.godrivekotlin.utilities.VoiceRecorder
 import com.squareup.picasso.Picasso
@@ -55,6 +59,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var voiceRecorder: VoiceRecorder
     private lateinit var messagesListener: ValueEventListener
     private lateinit var uid: String
+    private lateinit var sharedPreferences: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,13 +69,13 @@ class MainActivity : AppCompatActivity() {
         voiceRecorder = VoiceRecorder()
         auth = Firebase.auth
         user = User()
+        sharedPreferences = PreferenceManager(applicationContext)
         storage = FirebaseStorage.getInstance().reference
         database = FirebaseDatabase.getInstance().reference
         uid = auth.currentUser?.uid.toString()
-        setUpActionBar()
+//        setUpActionBar()
         initUser()
         initRCView()
-        mainActivity.title = "Title"
     }
 
     override fun onStart() {
@@ -81,22 +86,23 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun onClickListener() {
-        val myRef = Firebase.database.getReference(KEY_PREFERENCE_NAME)
-
-
+        Log.i("Rush1", user.city)
         binding.layoutSend.setOnClickListener {
             if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Record...") {
-                val messageKey = myRef.push().key.toString()
-                myRef.child(messageKey).setValue(
+                val messageKey = database.child(KEY_PREFERENCE_NAME).child(user.city).push().key.toString()
+                val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(messageKey).setValue(
                     User(
                         user.username,
                         binding.inputMessage.text.toString(),
                         TYPE_TEXT,
                         "",
                         "",
-                        messageKey
+                        messageKey,
+                        user.city
                     )
                 )
+
                 binding.inputMessage.setText("")
             }
         }
@@ -104,7 +110,7 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             binding.buttonVoiceSend.setOnTouchListener { v, event ->
                 if (checkPermission(android.Manifest.permission.RECORD_AUDIO)) {
-                    val messageKey = myRef.push().key.toString()
+                    val messageKey = database.child(KEY_PREFERENCE_NAME).push().key.toString()
                     if (event.action == MotionEvent.ACTION_DOWN) {
                         binding.inputMessage.setText("Record...")
                         voiceRecorder.startRecorder(messageKey)
@@ -123,7 +129,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun uploadVoiceToStorage(uri: Uri, messageKey: String, type: String) {
-        val myRef = Firebase.database.getReference(KEY_PREFERENCE_NAME)
         val path = storage.child(KEY_FILE_URL).child(messageKey)
         path.putFile(uri)
             .addOnSuccessListener {
@@ -134,7 +139,8 @@ class MainActivity : AppCompatActivity() {
                             user.fileUrl = fileUrl
                             database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_FILE_URL)
                                 .setValue(fileUrl)
-                            myRef.child(messageKey).setValue(
+                            val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(messageKey).setValue(
                                 User(user.username, "", type, "", fileUrl, messageKey)
                             )
 
@@ -152,6 +158,7 @@ class MainActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     user = snapshot.getValue(User::class.java) ?: User()
+                    Log.i("Rush3", user.city)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -164,7 +171,8 @@ class MainActivity : AppCompatActivity() {
         binding.chatRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(this@MainActivity)
         binding.chatRecyclerView.layoutManager = linearLayoutManager
-        refMessages = database.child(KEY_PREFERENCE_NAME)
+        val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+        refMessages = database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(user.city)
         messagesListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (userSnapshot: DataSnapshot in snapshot.children) {
@@ -174,7 +182,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onCancelled(error: DatabaseError) {
             }
         }
@@ -201,14 +208,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpActionBar() {
-        val actionBar = supportActionBar
+
         Thread {
             val bitmap = Picasso.get().load(auth.currentUser?.photoUrl).get()
             val drawableIcon = BitmapDrawable(resources, bitmap)
             runOnUiThread {
                 actionBar?.setDisplayHomeAsUpEnabled(true)
                 actionBar?.setHomeAsUpIndicator(drawableIcon)
-                val titleText = database.child(KEY_PREFERENCE_NAME).key.toString()
+                val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                val titleText = database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).key.toString()
                 actionBar?.title = titleText
             }
 

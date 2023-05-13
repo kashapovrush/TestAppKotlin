@@ -13,6 +13,7 @@ class Constants {
         const val KEY_CHILD_USERNAME = "username"
         const val KEY_PROFILE_IMAGE = "profile_image"
         const val KEY_FILE_URL = "fileUrl"
+        const val KEY_CITY = "city"
         const val KEY_PHOTO_URL = "photoUrl"
         const val KEY_MESSAGE = "message_key"
         const val KEY_TYPE_MESSAGE = "type"
