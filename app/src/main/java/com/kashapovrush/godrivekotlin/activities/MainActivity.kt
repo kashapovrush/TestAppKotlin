@@ -7,10 +7,14 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
+import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import android.widget.Toolbar
 import androidx.appcompat.app.ActionBar
@@ -30,8 +34,10 @@ import com.kashapovrush.godrivekotlin.activities.sign.SignInActivity
 import com.kashapovrush.godrivekotlin.adapter.ChatAdapter
 import com.kashapovrush.godrivekotlin.databinding.ActivityMainBinding
 import com.kashapovrush.godrivekotlin.models.User
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.BASE_PHOTO_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CITY
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_DATE
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_MESSAGE
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PHOTO_URL
@@ -47,6 +53,8 @@ import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -73,7 +81,6 @@ class MainActivity : AppCompatActivity() {
         storage = FirebaseStorage.getInstance().reference
         database = FirebaseDatabase.getInstance().reference
         uid = auth.currentUser?.uid.toString()
-//        setUpActionBar()
         initUser()
         initRCView()
     }
@@ -86,23 +93,42 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun onClickListener() {
-        Log.i("Rush1", user.city)
-        binding.layoutSend.setOnClickListener {
-            if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Record...") {
-                val messageKey = database.child(KEY_PREFERENCE_NAME).child(user.city).push().key.toString()
-                val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
-                database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(messageKey).setValue(
-                    User(
-                        user.username,
-                        binding.inputMessage.text.toString(),
-                        TYPE_TEXT,
-                        "",
-                        "",
-                        messageKey,
-                        user.city
-                    )
-                )
+        binding.inputMessage.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                if (binding.inputMessage.text.toString()
+                        .isEmpty() || binding.inputMessage.text.toString() == "Record..."
+                ) {
+                    binding.buttonTextSend.visibility = View.GONE
+                    binding.buttonVoiceSend.visibility = View.VISIBLE
+                } else {
+                    binding.buttonTextSend.visibility = View.VISIBLE
+                    binding.buttonVoiceSend.visibility = View.GONE
+                }
+            }
+        })
+
+        binding.buttonTextSend.setOnClickListener {
+            if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Record...") {
+                val messageKey =
+                    database.child(KEY_PREFERENCE_NAME).child(user.city).push().key.toString()
+                val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(messageKey)
+                    .setValue(
+                        User(
+                            user.username,
+                            binding.inputMessage.text.toString(),
+                            TYPE_TEXT,
+                            user.photoUrl,
+                            "",
+                            messageKey,
+                            user.city,
+                            System.currentTimeMillis()
+                        )
+                    )
                 binding.inputMessage.setText("")
             }
         }
@@ -126,6 +152,41 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.imageInfo.setOnClickListener {
+            val menu = PopupMenu(this, binding.imageInfo)
+            val inflater = menu.menuInflater
+            inflater.inflate(R.menu.main_menu, menu.menu)
+
+            menu.show()
+
+            menu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.data_user -> {
+                        val intent = Intent(this, UserDataActivity::class.java)
+                        startActivity(intent)
+                    }
+                    R.id.sign_out -> {
+                        auth.signOut()
+                        val intent = Intent(this, SignInActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+                true
+            }
+
+        }
+
+        binding.textCity.setOnClickListener {
+            val intent = Intent(this@MainActivity, UserDataActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.imageProfileChatMessage.setOnClickListener {
+            val intent = Intent(this@MainActivity, UserDataActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     private fun uploadVoiceToStorage(uri: Uri, messageKey: String, type: String) {
@@ -140,10 +201,19 @@ class MainActivity : AppCompatActivity() {
                             database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_FILE_URL)
                                 .setValue(fileUrl)
                             val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
-                            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(messageKey).setValue(
-                                User(user.username, "", type, "", fileUrl, messageKey)
-                            )
-
+                            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
+                                .child(messageKey).setValue(
+                                    User(
+                                        user.username,
+                                        "",
+                                        type,
+                                        user.photoUrl,
+                                        fileUrl,
+                                        messageKey,
+                                        user.city,
+                                        System.currentTimeMillis()
+                                    )
+                                )
                         }
                     }
                     .addOnFailureListener {
@@ -155,15 +225,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUser() {
         database.child(KEY_COLLECTION_USERS).child(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     user = snapshot.getValue(User::class.java) ?: User()
-                    Log.i("Rush3", user.city)
+                    Log.i("Rush", sharedPreferences.getString(KEY_PREFERENCE_NAME).toString())
+                    if (sharedPreferences.getString(KEY_PREFERENCE_NAME) == null) {
+                        binding.textCity.text = "Выберите город"
+                    } else {
+                        binding.textCity.text = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                    }
+                    if (user.photoUrl.isEmpty()) {
+                        Picasso.get()
+                            .load(BASE_PHOTO_URL)
+                            .into(binding.imageProfileChatMessage)
+                    } else {
+                        Picasso.get()
+                            .load(user.photoUrl)
+                            .into(binding.imageProfileChatMessage)
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
                 }
             })
+
+
     }
 
     private fun initRCView() {
@@ -172,7 +258,8 @@ class MainActivity : AppCompatActivity() {
         val linearLayoutManager = LinearLayoutManager(this@MainActivity)
         binding.chatRecyclerView.layoutManager = linearLayoutManager
         val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
-        refMessages = database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(user.city)
+        refMessages =
+            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
         messagesListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (userSnapshot: DataSnapshot in snapshot.children) {
@@ -182,45 +269,11 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
             override fun onCancelled(error: DatabaseError) {
             }
         }
         refMessages.addValueEventListener(messagesListener)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.sign_out) {
-            auth.signOut()
-            val intent = Intent(this, SignInActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-        if (item.itemId == R.id.data_user) {
-            val intent = Intent(this, UserDataActivity::class.java)
-            startActivity(intent)
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    private fun setUpActionBar() {
-
-        Thread {
-            val bitmap = Picasso.get().load(auth.currentUser?.photoUrl).get()
-            val drawableIcon = BitmapDrawable(resources, bitmap)
-            runOnUiThread {
-                actionBar?.setDisplayHomeAsUpEnabled(true)
-                actionBar?.setHomeAsUpIndicator(drawableIcon)
-                val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
-                val titleText = database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).key.toString()
-                actionBar?.title = titleText
-            }
-
-        }.start()
     }
 
     private fun checkPermission(permission: String): Boolean {
@@ -248,4 +301,5 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
 
     }
+
 }

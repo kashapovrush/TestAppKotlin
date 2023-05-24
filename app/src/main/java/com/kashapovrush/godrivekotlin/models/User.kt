@@ -7,5 +7,6 @@ data class User(
     var photoUrl: String = "",
     var fileUrl: String = "",
     var messageKey: String = "",
-    var city: String = ""
+    var city: String = "",
+    var date: Any = ""
 )

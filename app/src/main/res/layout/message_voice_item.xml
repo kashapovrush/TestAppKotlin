@@ -2,55 +2,71 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/_8sdp"
+    android:padding="@dimen/_4sdp">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bloc_voice_message"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:background="#D5FFDA"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <com.makeramen.roundedimageview.RoundedImageView
+        android:id="@+id/image_profile_message_voice"
+        android:layout_width="@dimen/_25sdp"
+        android:layout_height="@dimen/_25sdp"
+        android:background="@drawable/background_image"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/text_message"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:riv_oval="true" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/text_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:layout_marginLeft="@dimen/_4sdp"
+        android:background="@drawable/background_send_message"
+        android:paddingStart="@dimen/_20sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingEnd="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_8sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_13ssp"
+        app:layout_constraintStart_toEndOf="@id/image_profile_message_voice"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="wrap"
+        app:layout_constraintWidth_percent="0.75">
 
         <ImageView
             android:id="@+id/image_play_voice"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:visibility="visible"
-            app:layout_constraintVertical_bias="0.0"
             android:src="@drawable/ic_button_play_voice"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <ImageView
             android:id="@+id/image_stop_voice"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@drawable/ic_button_stop_voice"
+            android:src="@drawable/ic_button_pause_voice"
             android:visibility="gone"
-            app:layout_constraintVertical_bias="0.0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/user_name_voice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="rush"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/time_message_voice"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:textColor="@color/grey"
+        android:textSize="@dimen/_8ssp"
+        app:layout_constraintStart_toStartOf="@id/text_message"
+        app:layout_constraintTop_toBottomOf="@id/text_message" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

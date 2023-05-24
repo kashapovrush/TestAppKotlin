@@ -4,7 +4,9 @@ data class ViewVoiceMessage(
     override val username: String,
     override val message: String = "",
     override val fileUrl: String,
-    override val messageKey: String
+    override val messageKey: String,
+    override val date: String,
+    override val photoUrl: String
 
 
 ) : MessageView {

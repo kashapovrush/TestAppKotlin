@@ -4,13 +4,22 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/background_image.xml" value="0.1925" />
-        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/background_phone_input.xml" value="0.1715" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/background_send_message.xml" value="0.1655" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/background_top.xml" value="0.1655" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/ic_base_photo_camera.xml" value="0.11" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/ic_button_play_voice.xml" value="0.1655" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/ic_button_stop_voice.xml" value="0.1655" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/ic_menu.xml" value="0.1655" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/drawable/ic_send_voice.xml" value="0.1655" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/activity_main.xml" value="0.22" />
         <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/activity_sign_in.xml" value="0.25" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/activity_sign_in_enter_code.xml" value="0.18229166666666666" />
         <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/activity_user_data.xml" value="0.25" />
         <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/message_text_item.xml" value="0.22" />
         <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/message_voice_item.xml" value="0.25" />
         <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/layout/user_list_item.xml" value="0.16485507246376813" />
-        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/menu/main_menu.xml" value="0.18802083333333333" />
+        <entry key="..\:/Users/Rushan/AndroidStudioProjects/goDriveKotlin/app/src/main/res/menu/main_menu.xml" value="0.25" />
       </map>
     </option>
   </component>

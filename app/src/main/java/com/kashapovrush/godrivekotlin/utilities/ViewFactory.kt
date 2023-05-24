@@ -9,10 +9,24 @@ import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.TYPE_VOICE
 
 class ViewFactory {
     companion object {
-        fun getType(message: User) : MessageView {
-            return when(message.type) {
-                TYPE_VOICE -> ViewVoiceMessage(message.username, message.message, message.fileUrl, message.messageKey)
-                else -> ViewTextMessage(message.username, message.message, message.fileUrl, message.messageKey)
+        fun getType(message: User): MessageView {
+            return when (message.type) {
+                TYPE_VOICE -> ViewVoiceMessage(
+                    message.username,
+                    message.message,
+                    message.fileUrl,
+                    message.messageKey,
+                    message.date.toString(),
+                    message.photoUrl
+                )
+                else -> ViewTextMessage(
+                    message.username,
+                    message.message,
+                    message.fileUrl,
+                    message.messageKey,
+                    message.date.toString(),
+                    message.photoUrl
+                )
 
             }
         }

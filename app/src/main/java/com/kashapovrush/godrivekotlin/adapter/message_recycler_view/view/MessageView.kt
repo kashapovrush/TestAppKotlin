@@ -5,6 +5,8 @@ interface MessageView {
     val message: String
     val fileUrl: String
     val messageKey: String
+    val date: String
+    val photoUrl: String
 
     companion object {
         val MESSAGE_TEXT: Int

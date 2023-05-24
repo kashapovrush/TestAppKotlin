@@ -16,11 +16,13 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrivekotlin.databinding.ActivityUserDataBinding
 import com.kashapovrush.godrivekotlin.models.User
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.BASE_PHOTO_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_USERNAME
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CITY
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERNAMES
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PHOTO_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PREFERENCE_NAME
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PROFILE_IMAGE
 import com.kashapovrush.godrivekotlin.utilities.PreferenceManager
@@ -75,8 +77,6 @@ class UserDataActivity : AppCompatActivity() {
                                 user.city = listCity[position]
                             }
                         }
-
-
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -119,14 +119,13 @@ class UserDataActivity : AppCompatActivity() {
                     path.downloadUrl.addOnCompleteListener { task2 ->
                         if (task2.isSuccessful) {
                             val photoUrl = task2.result.toString()
-                            database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_FILE_URL)
+                            database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_PHOTO_URL)
                                 .setValue(photoUrl)
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {
                                         user.photoUrl = photoUrl
                                         Picasso.get()
                                             .load(user.photoUrl)
-                                            .placeholder(R.drawable.common_full_open_on_phone)
                                             .into(binding.imageProfile)
                                         toastShow("Данные изменены")
 
@@ -147,10 +146,17 @@ class UserDataActivity : AppCompatActivity() {
                     user = snapshot.getValue(User::class.java) ?: User()
                     binding.inputName.setText(user.username)
                     binding.choiseCity.text = user.city
-                    Picasso.get()
-                        .load(user.photoUrl)
-                        .placeholder(R.drawable.common_full_open_on_phone)
-                        .into(binding.imageProfile)
+                    if (user.photoUrl.isEmpty()) {
+                        Picasso.get()
+                            .load(BASE_PHOTO_URL)
+                            .into(binding.imageProfile)
+//                        binding.imageProfile.setImageResource(com.kashapovrush.godrivekotlin.R.drawable.ic_base_photo_camera)
+                    }
+                    else {
+                        Picasso.get()
+                            .load(user.photoUrl)
+                            .into(binding.imageProfile)
+                    }
                 }
 
                 override fun onCancelled(error: DatabaseError) {

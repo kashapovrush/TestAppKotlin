@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -20,7 +21,7 @@ import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTI
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_USERNAME
 import java.util.concurrent.TimeUnit
 
-class PhoneAuthActivity(private val signInActivity: SignInActivity, val view: EditText) {
+class PhoneAuthActivity(private val signInActivity: AppCompatActivity, val view: EditText) {
 
     private var auth: FirebaseAuth = Firebase.auth
     private var id: String = ""
@@ -91,6 +92,11 @@ class PhoneAuthActivity(private val signInActivity: SignInActivity, val view: Ed
                             toastShow("No no")
                         }
                     }
+                        .addOnFailureListener {
+                            toastShow("NO")
+                        }
+                } else {
+
                 }
             }
 

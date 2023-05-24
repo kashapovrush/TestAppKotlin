@@ -10,10 +10,10 @@ import com.kashapovrush.godrivekotlin.utilities.VoicePlayer
 
 class HolderVoiceMessage(binding: MessageVoiceItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-    val userNameVoice: TextView = binding.userNameVoice
-
+    val dateMessageVoice: TextView = binding.timeMessageVoice
     val buttonPlayVoice: ImageView = binding.imagePlayVoice
     val buttonStopVoice: ImageView = binding.imageStopVoice
+    val imageProfileMessageVoice: ImageView = binding.imageProfileMessageVoice
 
     private val voicePlayer = VoicePlayer()
 

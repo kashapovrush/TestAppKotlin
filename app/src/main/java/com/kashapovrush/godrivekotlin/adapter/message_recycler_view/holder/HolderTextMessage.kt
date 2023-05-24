@@ -1,5 +1,6 @@
 package com.kashapovrush.godrivekotlin.adapter.message_recycler_view.holder
 
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.kashapovrush.godrivekotlin.databinding.MessageTextItemBinding
@@ -8,7 +9,8 @@ class HolderTextMessage(binding: MessageTextItemBinding) : RecyclerView.ViewHold
 
 
     val textMessage: TextView = binding.textMessage
-    val userNameMessage: TextView = binding.userNameMessage
+    val dateMessageText: TextView = binding.timeMessageText
+    val imageProfileMessageText: ImageView = binding.imageProfileMessageText
 
 
 }

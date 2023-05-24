@@ -9,6 +9,7 @@ class Constants {
         const val KEY_PREFERENCE_NAME = "message"
         const val KEY_SIGN_IN = 100
         const val KEY_CHILD_ID = "id"
+        const val KEY_DATE = "date"
         const val KEY_CHILD_PHONE_NUMBER = "phone"
         const val KEY_CHILD_USERNAME = "username"
         const val KEY_PROFILE_IMAGE = "profile_image"
@@ -21,5 +22,8 @@ class Constants {
         const val TYPE_VOICE = "voice"
 
         lateinit var mainActivity: MainActivity
+
+        const val BASE_PHOTO_URL =
+            "https://firebasestorage.googleapis.com/v0/b/godrivekotlin-27458.appspot.com/o/profile_image%2Fbase_photo2.jpeg?alt=media&token=ac9642a9-aa50-40ab-8054-598ff3a401d2"
     }
 }
