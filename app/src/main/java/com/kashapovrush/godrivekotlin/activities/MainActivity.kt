@@ -3,21 +3,15 @@ package com.kashapovrush.godrivekotlin.activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.widget.PopupMenu
-import android.widget.Toast
-import android.widget.Toolbar
-import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -25,36 +19,31 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrivekotlin.R
 import com.kashapovrush.godrivekotlin.activities.sign.SignInActivity
 import com.kashapovrush.godrivekotlin.adapter.ChatAdapter
 import com.kashapovrush.godrivekotlin.databinding.ActivityMainBinding
+import com.kashapovrush.godrivekotlin.models.Notification
 import com.kashapovrush.godrivekotlin.models.User
+import com.kashapovrush.godrivekotlin.utilities.*
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.BASE_PHOTO_URL
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CITY
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_DATE
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FCM
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_MESSAGE
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PHOTO_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PREFERENCE_NAME
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_TYPE_MESSAGE
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_TOKEN
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.TYPE_TEXT
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.TYPE_VOICE
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.mainActivity
-import com.kashapovrush.godrivekotlin.utilities.PreferenceManager
-import com.kashapovrush.godrivekotlin.utilities.ViewFactory
-import com.kashapovrush.godrivekotlin.utilities.VoiceRecorder
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -62,10 +51,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: ChatAdapter
     private lateinit var storage: StorageReference
     private lateinit var user: User
+    private lateinit var notification: Notification
     private lateinit var database: DatabaseReference
     private lateinit var refMessages: DatabaseReference
+    private lateinit var ref: DatabaseReference
     private lateinit var voiceRecorder: VoiceRecorder
     private lateinit var messagesListener: ValueEventListener
+    private lateinit var notificationListener: ChildEventListener
     private lateinit var uid: String
     private lateinit var sharedPreferences: PreferenceManager
 
@@ -77,19 +69,62 @@ class MainActivity : AppCompatActivity() {
         voiceRecorder = VoiceRecorder()
         auth = Firebase.auth
         user = User()
+        notification = Notification()
         sharedPreferences = PreferenceManager(applicationContext)
         storage = FirebaseStorage.getInstance().reference
         database = FirebaseDatabase.getInstance().reference
         uid = auth.currentUser?.uid.toString()
         initUser()
         initRCView()
+        val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+        ref = FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
+        var keyUID = ""
+
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    return@addOnCompleteListener
+                }
+                keyUID = it.result
+            }
+        notificationListener = object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                for (tokenSnapshot in snapshot.children) {
+                    val token = tokenSnapshot.getValue(String::class.java)
+                    if (keyUID != token) {
+                        SendNotification.pushNotification(
+                            this@MainActivity,
+                            token.toString(),
+                            cityValue.toString(),
+                            "Новое сообщение"
+                        )
+                    }
+                }
+            }
+
+            override fun onChildChanged(
+                snapshot: DataSnapshot,
+                previousChildName: String?
+            ) {
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        }
     }
+
 
     override fun onStart() {
         super.onStart()
         onClickListener()
     }
-
 
     @SuppressLint("ClickableViewAccessibility")
     private fun onClickListener() {
@@ -129,6 +164,24 @@ class MainActivity : AppCompatActivity() {
                             System.currentTimeMillis()
                         )
                     )
+                ref.addChildEventListener(notificationListener)
+//                ref.addValueEventListener(object : ValueEventListener {
+//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                        for (tokenSnapshot in dataSnapshot.children) {
+//                            val token = tokenSnapshot.getValue(Notification::class.java) ?: Notification()
+//
+//                            if (keyUID != token.token) {
+//                                SendNotification.pushNotification(this@MainActivity, token.token, cityValue.toString(), "Новое сообщение")
+//                            }
+//                        }
+//
+//                    }
+//
+//                    override fun onCancelled(databaseError: DatabaseError) {
+//                        throw databaseError.toException()
+//                    }
+//                })
+//                SendNotification.pushNotification(this, KEY_TOKEN, cityValue.toString(), "Новое сообщение")
                 binding.inputMessage.setText("")
             }
         }
@@ -228,7 +281,6 @@ class MainActivity : AppCompatActivity() {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     user = snapshot.getValue(User::class.java) ?: User()
-                    Log.i("Rush", sharedPreferences.getString(KEY_PREFERENCE_NAME).toString())
                     if (sharedPreferences.getString(KEY_PREFERENCE_NAME) == null) {
                         binding.textCity.text = "Выберите город"
                     } else {
@@ -266,14 +318,18 @@ class MainActivity : AppCompatActivity() {
                     val message = userSnapshot.getValue(User::class.java) ?: User()
                     adapter.setList(ViewFactory.getType(message)) {
                         binding.chatRecyclerView.smoothScrollToPosition(adapter.itemCount)
+
                     }
                 }
+
             }
+
 
             override fun onCancelled(error: DatabaseError) {
             }
         }
         refMessages.addValueEventListener(messagesListener)
+
     }
 
     private fun checkPermission(permission: String): Boolean {
@@ -296,10 +352,12 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         refMessages.removeEventListener(messagesListener)
+        ref.removeEventListener(notificationListener)
     }
 
     override fun onBackPressed() {
 
     }
+
 
 }

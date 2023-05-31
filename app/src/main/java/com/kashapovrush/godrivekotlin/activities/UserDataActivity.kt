@@ -12,15 +12,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrivekotlin.databinding.ActivityUserDataBinding
+import com.kashapovrush.godrivekotlin.models.Notification
 import com.kashapovrush.godrivekotlin.models.User
+import com.kashapovrush.godrivekotlin.utilities.Constants
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.BASE_PHOTO_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CHILD_USERNAME
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_CITY
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERNAMES
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FCM
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PHOTO_URL
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PREFERENCE_NAME
@@ -70,13 +74,17 @@ class UserDataActivity : AppCompatActivity() {
             ) {
                 val uid = auth.currentUser?.uid.toString()
                 if (listCity[position] != listCity[0]) {
+                    val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
+                    deletePreviousToken(cityValue.toString())
                     database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_CITY)
                         .setValue(listCity[position]).addOnCompleteListener {
                             if (it.isSuccessful) {
                                 preferenceManager.putString(KEY_PREFERENCE_NAME, listCity[position])
                                 user.city = listCity[position]
+                                putTokenToFirebase(listCity[position])
                             }
                         }
+
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -216,6 +224,23 @@ class UserDataActivity : AppCompatActivity() {
                     user.username = newUsername
                 }
             }
+    }
+
+    private fun putTokenToFirebase(city: String) {
+        val uid = auth.currentUser?.uid.toString()
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener {
+                if (!it.isSuccessful) {
+                    return@addOnCompleteListener
+                }
+                val token = it.result
+                database.child(KEY_FCM).child(city).child(uid).setValue(Notification(token))
+            }
+    }
+
+    private fun deletePreviousToken(city: String) {
+        val uid = auth.currentUser?.uid.toString()
+        database.child(KEY_FCM).child(city).child(uid).removeValue()
     }
 
     private fun toastShow(message: String) {
