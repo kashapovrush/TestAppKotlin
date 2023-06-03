@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.PopupMenu
@@ -34,8 +33,8 @@ import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.BASE_PHOTO_U
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FCM
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_FILE_URL
+import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_NOTIFICATION_STATE
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_PREFERENCE_NAME
-import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.KEY_TOKEN
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.TYPE_TEXT
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.TYPE_VOICE
 import com.kashapovrush.godrivekotlin.utilities.Constants.Companion.mainActivity
@@ -54,12 +53,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notification: Notification
     private lateinit var database: DatabaseReference
     private lateinit var refMessages: DatabaseReference
-    private lateinit var ref: DatabaseReference
+    private lateinit var refTextNotification: DatabaseReference
+    private lateinit var refVoiceNotification: DatabaseReference
     private lateinit var voiceRecorder: VoiceRecorder
     private lateinit var messagesListener: ValueEventListener
-    private lateinit var notificationListener: ChildEventListener
+    private lateinit var notificationTextListener: ChildEventListener
+    private lateinit var notificationVoiceListener: ChildEventListener
     private lateinit var uid: String
-    private lateinit var sharedPreferences: PreferenceManager
+    private lateinit var preferenceManager: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,14 +71,15 @@ class MainActivity : AppCompatActivity() {
         auth = Firebase.auth
         user = User()
         notification = Notification()
-        sharedPreferences = PreferenceManager(applicationContext)
+        preferenceManager = PreferenceManager(applicationContext)
         storage = FirebaseStorage.getInstance().reference
         database = FirebaseDatabase.getInstance().reference
         uid = auth.currentUser?.uid.toString()
         initUser()
         initRCView()
-        val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
-        ref = FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
+        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
+        refTextNotification =
+            FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
         var keyUID = ""
 
         FirebaseMessaging.getInstance().token
@@ -87,7 +89,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 keyUID = it.result
             }
-        notificationListener = object : ChildEventListener {
+        notificationTextListener = object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 for (tokenSnapshot in snapshot.children) {
                     val token = tokenSnapshot.getValue(String::class.java)
@@ -106,6 +108,35 @@ class MainActivity : AppCompatActivity() {
                 snapshot: DataSnapshot,
                 previousChildName: String?
             ) {
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        }
+
+        notificationVoiceListener = object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                for (tokenSnapshot in snapshot.children) {
+                    val token = tokenSnapshot.getValue(String::class.java)
+                    if (keyUID != token) {
+                        SendNotification.pushNotification(
+                            this@MainActivity,
+                            token.toString(),
+                            cityValue.toString(),
+                            "Новое голосовое сообщение"
+                        )
+                    }
+                }
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
             }
 
             override fun onChildRemoved(snapshot: DataSnapshot) {
@@ -147,10 +178,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.buttonTextSend.setOnClickListener {
-            if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Record...") {
+            if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Запись...") {
                 val messageKey =
                     database.child(KEY_PREFERENCE_NAME).child(user.city).push().key.toString()
-                val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
                 database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(messageKey)
                     .setValue(
                         User(
@@ -164,24 +195,7 @@ class MainActivity : AppCompatActivity() {
                             System.currentTimeMillis()
                         )
                     )
-                ref.addChildEventListener(notificationListener)
-//                ref.addValueEventListener(object : ValueEventListener {
-//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                        for (tokenSnapshot in dataSnapshot.children) {
-//                            val token = tokenSnapshot.getValue(Notification::class.java) ?: Notification()
-//
-//                            if (keyUID != token.token) {
-//                                SendNotification.pushNotification(this@MainActivity, token.token, cityValue.toString(), "Новое сообщение")
-//                            }
-//                        }
-//
-//                    }
-//
-//                    override fun onCancelled(databaseError: DatabaseError) {
-//                        throw databaseError.toException()
-//                    }
-//                })
-//                SendNotification.pushNotification(this, KEY_TOKEN, cityValue.toString(), "Новое сообщение")
+                refTextNotification.addChildEventListener(notificationTextListener)
                 binding.inputMessage.setText("")
             }
         }
@@ -191,7 +205,7 @@ class MainActivity : AppCompatActivity() {
                 if (checkPermission(android.Manifest.permission.RECORD_AUDIO)) {
                     val messageKey = database.child(KEY_PREFERENCE_NAME).push().key.toString()
                     if (event.action == MotionEvent.ACTION_DOWN) {
-                        binding.inputMessage.setText("Record...")
+                        binding.inputMessage.setText("Запись...")
                         voiceRecorder.startRecorder(messageKey)
 
                     } else if (event.action == MotionEvent.ACTION_UP) {
@@ -216,6 +230,10 @@ class MainActivity : AppCompatActivity() {
                 when (it.itemId) {
                     R.id.data_user -> {
                         val intent = Intent(this, UserDataActivity::class.java)
+                        startActivity(intent)
+                    }
+                    R.id.notification_settings -> {
+                        val intent = Intent(this, NotificationSettings::class.java)
                         startActivity(intent)
                     }
                     R.id.sign_out -> {
@@ -253,7 +271,7 @@ class MainActivity : AppCompatActivity() {
                             user.fileUrl = fileUrl
                             database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_FILE_URL)
                                 .setValue(fileUrl)
-                            val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                            val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
                             database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
                                 .child(messageKey).setValue(
                                     User(
@@ -267,6 +285,7 @@ class MainActivity : AppCompatActivity() {
                                         System.currentTimeMillis()
                                     )
                                 )
+                            refVoiceNotification.addChildEventListener(notificationVoiceListener)
                         }
                     }
                     .addOnFailureListener {
@@ -281,10 +300,10 @@ class MainActivity : AppCompatActivity() {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     user = snapshot.getValue(User::class.java) ?: User()
-                    if (sharedPreferences.getString(KEY_PREFERENCE_NAME) == null) {
+                    if (preferenceManager.getString(KEY_PREFERENCE_NAME) == null) {
                         binding.textCity.text = "Выберите город"
                     } else {
-                        binding.textCity.text = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+                        binding.textCity.text = preferenceManager.getString(KEY_PREFERENCE_NAME)
                     }
                     if (user.photoUrl.isEmpty()) {
                         Picasso.get()
@@ -309,7 +328,7 @@ class MainActivity : AppCompatActivity() {
         binding.chatRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(this@MainActivity)
         binding.chatRecyclerView.layoutManager = linearLayoutManager
-        val cityValue = sharedPreferences.getString(KEY_PREFERENCE_NAME)
+        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
         refMessages =
             database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
         messagesListener = object : ValueEventListener {
@@ -352,7 +371,7 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         refMessages.removeEventListener(messagesListener)
-        ref.removeEventListener(notificationListener)
+        refTextNotification.removeEventListener(notificationTextListener)
     }
 
     override fun onBackPressed() {

@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/_18ssp"
             android:layout_marginTop="@dimen/_40sdp"
-            android:text="Welcom"
+            android:text="Введите"
             android:textStyle="bold"
             />
 
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/_12ssp"
             android:layout_marginTop="@dimen/_4sdp"
-            android:text="Login to be continue"
+            android:text="номер телефона для входа"
             android:textStyle="bold"
             />
 
@@ -78,12 +78,19 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_50sdp"
             android:backgroundTint="@color/background"
-            android:text="Войти по номеру телефона"
+            android:text="Войти"
             app:cornerRadius="@dimen/_8sdp"
             android:textSize="@dimen/_13ssp"
             android:textColor="@color/white"
             />
         </FrameLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:visibility="invisible"
+            />
 
 
         <TextView

@@ -23,6 +23,7 @@ class Constants {
         const val CHANNEL_ID = "channel_id"
         const val CHANNEL_NAME = "channel_name"
         const val KEY_FCM = "token"
+        const val KEY_NOTIFICATION_STATE = "notification_state"
         const val KEY_TOKEN = "dCimcfUyTj2rArJ9p2Y41p:APA91bGL1qX742A09bfGSAJ88l6DIvvulf5VzejBexNF8uaMztB_7PFzjpLHjtd_JEJ6PDGUQZNuHxjdYaVhe3iXO48rP-8p3Grvr-F-2L1hcuhlS3Ge7txg9770Zr9qR5FEhEU1vdx9"
 
         lateinit var mainActivity: MainActivity
