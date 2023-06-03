@@ -102,4 +102,7 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
     }
 
 
+    override fun onBackPressed() {
+
+    }
 }
