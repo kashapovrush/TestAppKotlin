@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -87,7 +88,7 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
                         }
                     }
                         .addOnFailureListener {
-
+                            toastShow("Ошибка, попробуйте повторить позже :(")
                         }
                 }
             }
@@ -99,6 +100,10 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
         })
+    }
+
+    private fun toastShow(message: String) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
     }
 
 

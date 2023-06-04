@@ -32,8 +32,9 @@ class NotificationSettings : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
         preferenceManager = PreferenceManager(applicationContext)
-        binding.onNotification.isChecked = preferenceManager.getBoolean(KEY_NOTIFICATION_STATE)
-
+        if (preferenceManager.getBoolean(KEY_NOTIFICATION_STATE) != null) {
+            binding.onNotification.isChecked = preferenceManager.getBoolean(KEY_NOTIFICATION_STATE)
+        }
 
         binding.onNotification.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {

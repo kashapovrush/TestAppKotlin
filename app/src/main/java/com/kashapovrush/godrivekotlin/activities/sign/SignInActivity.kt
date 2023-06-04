@@ -46,13 +46,13 @@ class SignInActivity : AppCompatActivity() {
                         val intent = Intent(this@SignInActivity, MainActivity::class.java)
                         startActivity(intent)
                     } else {
-                        toastShow("No no")
+                        toastShow("Ошибка, попробуйте повторить позже :(")
                     }
                 }
             }
 
             override fun onVerificationFailed(error: FirebaseException) {
-                Log.i("RushErr", error.message.toString())
+                toastShow("Ошибка, попробуйте повторить позже :(")
             }
 
             override fun onCodeSent(

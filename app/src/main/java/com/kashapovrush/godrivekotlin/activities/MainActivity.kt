@@ -80,6 +80,8 @@ class MainActivity : AppCompatActivity() {
         val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
         refTextNotification =
             FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
+        refVoiceNotification =
+            FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
         var keyUID = ""
 
         FirebaseMessaging.getInstance().token
@@ -372,6 +374,7 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         refMessages.removeEventListener(messagesListener)
         refTextNotification.removeEventListener(notificationTextListener)
+        refVoiceNotification.removeEventListener(notificationVoiceListener)
     }
 
     override fun onBackPressed() {
