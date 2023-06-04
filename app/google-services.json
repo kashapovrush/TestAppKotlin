@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:203111369552:android:9b17dfc77af6c5d68e3a55",
+        "mobilesdk_app_id": "1:203111369552:android:8bc3087c18fbfce58e3a55",
         "android_client_info": {
-          "package_name": "com.kashapovrush.godrivekotlin"
+          "package_name": "com.kashapovrush.godrive"
         }
       },
       "oauth_client": [
         {
-          "client_id": "203111369552-5ub6e8l2rsp84ufpdbr44tnabl5ucdn1.apps.googleusercontent.com",
+          "client_id": "203111369552-dvnt20csc8r91cqtln0t2msujj4ovf5i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.kashapovrush.godrivekotlin",
+            "package_name": "com.kashapovrush.godrive",
             "certificate_hash": "6e2169e61651eee01dce0e60610cb98a665ac998"
           }
         },

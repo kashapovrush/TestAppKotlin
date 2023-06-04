@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.kashapovrush.godrivekotlin",
+  "applicationId": "com.kashapovrush.godrive",
   "variantName": "release",
   "elements": [
     {

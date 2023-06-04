@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.kashapovrush.godrivekotlin">
+    package="com.kashapovrush.godrive">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -19,20 +19,20 @@
         android:theme="@style/Theme.GoDriveKotlin"
         tools:targetApi="31">
         <activity
-            android:name=".activities.NotificationSettings"
+            android:name="com.kashapovrush.godrive.activities.NotificationSettings"
             android:exported="false" />
         <activity
-            android:name=".activities.sign.SignInEnterCodeActivity"
+            android:name="com.kashapovrush.godrive.activities.sign.SignInEnterCodeActivity"
             android:exported="false" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name=".activities.UserDataActivity"
+            android:name="com.kashapovrush.godrive.activities.UserDataActivity"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".activities.sign.SignInActivity"
+            android:name="com.kashapovrush.godrive.activities.sign.SignInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,13 +41,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.MainActivity"
+            android:name="com.kashapovrush.godrive.activities.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"></activity>
 
         <service
-            android:name=".service.ServiceMessaging"
+            android:name="com.kashapovrush.godrive.service.ServiceMessaging"
             android:exported="false"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
