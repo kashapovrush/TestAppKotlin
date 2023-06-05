@@ -1,8 +1,13 @@
 package com.kashapovrush.godrive.activities
 
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -28,9 +33,8 @@ class NotificationSettings : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
         preferenceManager = PreferenceManager(applicationContext)
-        if (preferenceManager.getBoolean(KEY_NOTIFICATION_STATE) != null) {
-            binding.onNotification.isChecked = preferenceManager.getBoolean(KEY_NOTIFICATION_STATE)
-        }
+
+        binding.onNotification.isChecked = preferenceManager.getBoolean(KEY_NOTIFICATION_STATE)
 
         binding.onNotification.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {

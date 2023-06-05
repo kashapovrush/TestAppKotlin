@@ -22,6 +22,7 @@ import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_CITY
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERNAMES
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_FCM
+import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_NOTIFICATION_STATE
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PHOTO_URL
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PREFERENCE_NAME
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PROFILE_IMAGE
@@ -229,7 +230,9 @@ class UserDataActivity : AppCompatActivity() {
                     return@addOnCompleteListener
                 }
                 val token = it.result
-                database.child(KEY_FCM).child(city).child(uid).setValue(Notification(token))
+                if (preferenceManager.getBoolean(KEY_NOTIFICATION_STATE)) {
+                    database.child(KEY_FCM).child(city).child(uid).setValue(Notification(token))
+                }
             }
     }
 
