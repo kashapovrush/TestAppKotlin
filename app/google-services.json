@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "203111369552-dvnt20csc8r91cqtln0t2msujj4ovf5i.apps.googleusercontent.com",
+          "client_id": "203111369552-sbs31u61sio8euf8l2chcfuvihq65ho3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.kashapovrush.godrive",
-            "certificate_hash": "6e2169e61651eee01dce0e60610cb98a665ac998"
+            "certificate_hash": "a3716bcabb067c61afd944692b2b2e5d2db7c65f"
           }
         },
         {

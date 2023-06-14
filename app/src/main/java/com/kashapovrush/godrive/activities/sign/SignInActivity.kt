@@ -2,6 +2,7 @@ package com.kashapovrush.godrive.activities.sign
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -34,7 +35,6 @@ class SignInActivity : AppCompatActivity() {
         preferenceManager = PreferenceManager(applicationContext)
 //        auth.firebaseAuthSettings.setAppVerificationDisabledForTesting(true)
 
-
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 auth.signInWithCredential(credential).addOnCompleteListener {
@@ -42,14 +42,14 @@ class SignInActivity : AppCompatActivity() {
                         val intent = Intent(this@SignInActivity, MainActivity::class.java)
                         startActivity(intent)
                     } else {
-                        toastShow("Ошибка, попробуйте повторить позже :(")
+                        toastShow("Ошибка, попробуйте позже :(")
                         stopProgressBar()
                     }
                 }
             }
 
             override fun onVerificationFailed(error: FirebaseException) {
-                toastShow("Ошибка, попробуйте повторить позже :(")
+                toastShow("Ошибка, попробуйте позже :(")
                 stopProgressBar()
             }
 
@@ -64,6 +64,11 @@ class SignInActivity : AppCompatActivity() {
             }
         }
 
+        binding.freeSignIn.setOnClickListener {
+            val intent = Intent(this@SignInActivity, FreeChatActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.buttonSignIn.setOnClickListener {
             val numberPhone = "+7" + binding.number.text.toString()
             if (binding.number.text.toString().isEmpty()) {
@@ -72,12 +77,7 @@ class SignInActivity : AppCompatActivity() {
                 runProgressBar()
                 startPhoneNumberVerification(numberPhone)
             }
-
         }
-
-
-
-
         checkAuthState()
     }
 
@@ -110,7 +110,7 @@ class SignInActivity : AppCompatActivity() {
 //    }
 
     private fun toastShow(message: String) {
-        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
     }
 
     private fun checkAuthState() {

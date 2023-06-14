@@ -1,11 +1,11 @@
 package com.kashapovrush.godrive.activities.sign
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -86,7 +86,7 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
                         }
                     }
                         .addOnFailureListener {
-                            toastShow("Ошибка, попробуйте повторить позже :(")
+                            toastShow("Ошибка, попробуйте позже :(")
                         }
                 }
             }
@@ -101,7 +101,7 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
     }
 
     private fun toastShow(message: String) {
-        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
     }
 
 

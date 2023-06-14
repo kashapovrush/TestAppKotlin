@@ -19,20 +19,26 @@
         android:theme="@style/Theme.GoDriveKotlin"
         tools:targetApi="31">
         <activity
-            android:name="com.kashapovrush.godrive.activities.NotificationSettings"
+            android:name=".activities.FreeChangeActivity"
             android:exported="false" />
         <activity
-            android:name="com.kashapovrush.godrive.activities.sign.SignInEnterCodeActivity"
+            android:name=".activities.sign.FreeChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.NotificationSettings"
+            android:exported="false" />
+        <activity
+            android:name=".activities.sign.SignInEnterCodeActivity"
             android:exported="false" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name="com.kashapovrush.godrive.activities.UserDataActivity"
+            android:name=".activities.UserDataActivity"
             android:exported="false"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name="com.kashapovrush.godrive.activities.sign.SignInActivity"
+            android:name=".activities.sign.SignInActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,11 +47,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.kashapovrush.godrive.activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <service
             android:name="com.kashapovrush.godrive.service.ServiceMessaging"

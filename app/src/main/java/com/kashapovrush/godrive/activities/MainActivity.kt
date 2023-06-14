@@ -8,9 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -28,7 +30,6 @@ import com.kashapovrush.godrive.adapter.ChatAdapter
 import com.kashapovrush.godrive.databinding.ActivityMainBinding
 import com.kashapovrush.godrive.models.Notification
 import com.kashapovrush.godrive.models.User
-import com.kashapovrush.godrive.utilities.*
 import com.kashapovrush.godrive.utilities.Constants.Companion.BASE_PHOTO_URL
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_FCM
@@ -37,10 +38,15 @@ import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PREFERENCE_NAM
 import com.kashapovrush.godrive.utilities.Constants.Companion.TYPE_TEXT
 import com.kashapovrush.godrive.utilities.Constants.Companion.TYPE_VOICE
 import com.kashapovrush.godrive.utilities.Constants.Companion.mainActivity
+import com.kashapovrush.godrive.utilities.PreferenceManager
+import com.kashapovrush.godrive.utilities.SendNotification
+import com.kashapovrush.godrive.utilities.ViewFactory
+import com.kashapovrush.godrive.utilities.VoiceRecorder
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -74,8 +80,6 @@ class MainActivity : AppCompatActivity() {
         storage = FirebaseStorage.getInstance().reference
         database = FirebaseDatabase.getInstance().reference
         uid = auth.currentUser?.uid.toString()
-        initUser()
-        initRCView()
         val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
         refTextNotification =
             FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
@@ -152,10 +156,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onStart() {
         super.onStart()
         onClickListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        initUser()
+        initRCView()
+
+        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
+//        val time: Long = Date().time - TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
+        val time: Long = Date().time - 3 * 60 * 60 * 1000
+        var del =
+            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).orderByChild("date").endAt(time.toDouble())
+
+        del.addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (itemSnapshot: DataSnapshot in snapshot.children) {
+                    itemSnapshot.ref.removeValue()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+            }
+
+        })
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -179,29 +210,36 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.buttonTextSend.setOnClickListener {
-            if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Запись...") {
-                val messageKey =
-                    database.child(KEY_PREFERENCE_NAME).child(user.city).push().key.toString()
-                val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
-                database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).child(messageKey)
-                    .setValue(
-                        User(
-                            user.username,
-                            binding.inputMessage.text.toString(),
-                            TYPE_TEXT,
-                            user.photoUrl,
-                            "",
-                            messageKey,
-                            user.city,
-                            System.currentTimeMillis()
+            if (binding.inputMessage.text.toString().length <= 100) {
+                if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Запись...") {
+                    val messageKey =
+                        database.child(KEY_PREFERENCE_NAME).child(user.city).push().key.toString()
+                    val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
+                    database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
+                        .child(messageKey)
+                        .setValue(
+                            User(
+                                user.username,
+                                binding.inputMessage.text.toString(),
+                                TYPE_TEXT,
+                                user.photoUrl,
+                                "",
+                                messageKey,
+                                user.city,
+                                System.currentTimeMillis()
+                            )
                         )
-                    )
-                refTextNotification.addChildEventListener(notificationTextListener)
+                    refTextNotification.addChildEventListener(notificationTextListener)
+                    binding.inputMessage.setText("")
+                }
+            } else {
+                showToast("Сообщение не отправлено! Вы пытаетесь отправить слишком длинное сообщение!")
                 binding.inputMessage.setText("")
             }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
+            var beginTime = System.currentTimeMillis()
             binding.buttonVoiceSend.setOnTouchListener { v, event ->
                 if (checkPermission(android.Manifest.permission.RECORD_AUDIO)) {
                     val messageKey = database.child(KEY_PREFERENCE_NAME).push().key.toString()
@@ -212,7 +250,12 @@ class MainActivity : AppCompatActivity() {
                     } else if (event.action == MotionEvent.ACTION_UP) {
                         binding.inputMessage.setText("")
                         voiceRecorder.stopRecorder { file, messageKey ->
-                            uploadVoiceToStorage(Uri.fromFile(file), messageKey, TYPE_VOICE)
+                            var endTime = System.currentTimeMillis()
+                            if (endTime - beginTime <= 10000) {
+                                uploadVoiceToStorage(Uri.fromFile(file), messageKey, TYPE_VOICE)
+                            } else {
+                                showToast("Голосовое сообщение не отправлено! Вы пытаетесь отправить слишком длинное сообщение!")
+                            }
                         }
                     }
                 }
@@ -297,6 +340,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initUser() {
+
         database.child(KEY_COLLECTION_USERS).child(uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -380,5 +424,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
+    fun showToast(message: String) {
+        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+    }
 }

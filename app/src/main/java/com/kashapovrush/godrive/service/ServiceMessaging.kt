@@ -4,7 +4,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -17,7 +16,6 @@ import java.util.*
 class ServiceMessaging: FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
-        Log.i("Rush", "token: $token")
         super.onNewToken(token)
     }
 
@@ -54,9 +52,7 @@ class ServiceMessaging: FirebaseMessagingService() {
                 notificationManager.createNotificationChannel(notificationChannel)
 
                 notificationManager.notify(notificationId, builder.build())
-                Log.i("Rush", "onMessageReceived")
             } catch (e: Exception) {
-                Log.i("RushMessageReceived", e.message.toString())
             }
         }
         super.onMessageReceived(message)

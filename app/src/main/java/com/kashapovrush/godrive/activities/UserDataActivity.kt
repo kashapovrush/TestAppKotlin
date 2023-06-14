@@ -41,7 +41,7 @@ class UserDataActivity : AppCompatActivity() {
     private lateinit var newUsername: String
     private lateinit var selectCity: Spinner
     private lateinit var preferenceManager: PreferenceManager
-    val listCity = arrayOf("Выберите город", "Туймазы", "Октябрьский", "Шаран", "Кандры")
+    val listCity = arrayOf("Выберите город", "Туймазы", "Октябрьский", "Шаран", "Кандры, Трасса М5")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

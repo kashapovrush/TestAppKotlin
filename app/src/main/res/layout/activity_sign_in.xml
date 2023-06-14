@@ -94,14 +94,15 @@
 
 
         <TextView
-            android:id="@+id/text_create_new_account"
+            android:id="@+id/free_sign_in"
             android:text="Войти без регистрации"
             android:layout_marginTop="@dimen/_100sdp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/_13ssp"
-            android:visibility="invisible"
+            android:visibility="visible"
             android:textStyle="bold"
+            android:padding="@dimen/_20sdp"
             />
 
 
