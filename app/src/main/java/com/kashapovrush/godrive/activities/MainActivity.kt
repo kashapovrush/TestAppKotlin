@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 if (binding.inputMessage.text.toString()
-                        .isEmpty() || binding.inputMessage.text.toString() == "Record..."
+                        .isEmpty() || binding.inputMessage.text.toString() == "Запись..."
                 ) {
                     binding.buttonTextSend.visibility = View.GONE
                     binding.buttonVoiceSend.visibility = View.VISIBLE

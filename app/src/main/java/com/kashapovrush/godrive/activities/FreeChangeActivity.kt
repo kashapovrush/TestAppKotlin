@@ -17,7 +17,7 @@ class FreeChangeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityFreeChangeBinding
     private lateinit var preferenceManager: PreferenceManager
-    val listCity = arrayOf("Выберите город", "Туймазы", "Октябрьский", "Шаран", "Кандры, Трасса М5")
+    val listCity = arrayOf("Выберите город", "Туймазы", "Октябрьский", "Шаран", "Кандры", "Трасса М5")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
