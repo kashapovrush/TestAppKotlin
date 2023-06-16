@@ -95,6 +95,7 @@ class UserDataActivity : AppCompatActivity() {
         binding.buttonBack.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         binding.layoutImage.setOnClickListener {
@@ -154,7 +155,6 @@ class UserDataActivity : AppCompatActivity() {
                         Picasso.get()
                             .load(BASE_PHOTO_URL)
                             .into(binding.imageProfile)
-//                        binding.imageProfile.setImageResource(com.kashapovrush.godrivekotlin.R.drawable.ic_base_photo_camera)
                     }
                     else {
                         Picasso.get()

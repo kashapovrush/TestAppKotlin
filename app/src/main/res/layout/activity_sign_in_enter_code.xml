@@ -72,6 +72,13 @@
                 />
         </FrameLayout>
 
+        <ProgressBar
+            android:id="@+id/progress_bar_enter_code"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:visibility="invisible"
+            />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 </ScrollView>

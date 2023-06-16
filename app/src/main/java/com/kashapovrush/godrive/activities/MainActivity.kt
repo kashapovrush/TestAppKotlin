@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.widget.PopupMenu
@@ -165,14 +166,17 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         initUser()
         initRCView()
+        removeMessagesAfterTime()
+    }
 
+    private fun removeMessagesAfterTime() {
         val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
-//        val time: Long = Date().time - TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
         val time: Long = Date().time - 3 * 60 * 60 * 1000
         var del =
-            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).orderByChild("date").endAt(time.toDouble())
+            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString()).orderByChild("date")
+                .endAt(time.toDouble())
 
-        del.addListenerForSingleValueEvent(object: ValueEventListener{
+        del.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 for (itemSnapshot: DataSnapshot in snapshot.children) {
                     itemSnapshot.ref.removeValue()
@@ -183,10 +187,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
-    }
-
-    override fun onStop() {
-        super.onStop()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -210,57 +210,74 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.buttonTextSend.setOnClickListener {
-            if (binding.inputMessage.text.toString().length <= 100) {
-                if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Запись...") {
-                    val messageKey =
-                        database.child(KEY_PREFERENCE_NAME).child(user.city).push().key.toString()
-                    val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
-                    database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
-                        .child(messageKey)
-                        .setValue(
-                            User(
-                                user.username,
-                                binding.inputMessage.text.toString(),
-                                TYPE_TEXT,
-                                user.photoUrl,
-                                "",
-                                messageKey,
-                                user.city,
-                                System.currentTimeMillis()
+            if (preferenceManager.getString(KEY_PREFERENCE_NAME) == null) {
+                showToast("Выберите город")
+                binding.inputMessage.setText("")
+            } else {
+                if (binding.inputMessage.text.toString().length <= 100) {
+                    if (binding.inputMessage.text.toString() != "" || binding.inputMessage.text.toString() == "Запись...") {
+                        val messageKey =
+                            database.child(KEY_PREFERENCE_NAME).child(user.city)
+                                .push().key.toString()
+                        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
+                        database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
+                            .child(messageKey)
+                            .setValue(
+                                User(
+                                    user.username,
+                                    binding.inputMessage.text.toString(),
+                                    TYPE_TEXT,
+                                    user.photoUrl,
+                                    "",
+                                    messageKey,
+                                    user.city,
+                                    System.currentTimeMillis()
+                                )
                             )
-                        )
-                    refTextNotification.addChildEventListener(notificationTextListener)
+                        refTextNotification.addChildEventListener(notificationTextListener)
+                        binding.inputMessage.setText("")
+                    }
+                } else {
+                    showToast("Сообщение не отправлено! Вы пытаетесь отправить слишком длинное сообщение!")
                     binding.inputMessage.setText("")
                 }
-            } else {
-                showToast("Сообщение не отправлено! Вы пытаетесь отправить слишком длинное сообщение!")
-                binding.inputMessage.setText("")
             }
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            var beginTime = System.currentTimeMillis()
             binding.buttonVoiceSend.setOnTouchListener { v, event ->
                 if (checkPermission(android.Manifest.permission.RECORD_AUDIO)) {
                     val messageKey = database.child(KEY_PREFERENCE_NAME).push().key.toString()
                     if (event.action == MotionEvent.ACTION_DOWN) {
+                        val beginTime = System.currentTimeMillis()
+                        preferenceManager.putLong("keyTime", beginTime)
                         binding.inputMessage.setText("Запись...")
                         voiceRecorder.startRecorder(messageKey)
 
                     } else if (event.action == MotionEvent.ACTION_UP) {
+
                         binding.inputMessage.setText("")
                         voiceRecorder.stopRecorder { file, messageKey ->
-                            var endTime = System.currentTimeMillis()
-                            if (endTime - beginTime <= 10000) {
-                                uploadVoiceToStorage(Uri.fromFile(file), messageKey, TYPE_VOICE)
+                            val endTime = System.currentTimeMillis()
+                            if (preferenceManager.getString(KEY_PREFERENCE_NAME) != null) {
+                                if (endTime - preferenceManager.getLong("keyTime") <= 10000) {
+                                    uploadVoiceToStorage(
+                                        Uri.fromFile(file),
+                                        messageKey,
+                                        TYPE_VOICE
+                                    )
+                                } else {
+                                    showToast("Голосовое сообщение не отправлено! Вы пытаетесь отправить слишком длинное сообщение!")
+                                }
                             } else {
-                                showToast("Голосовое сообщение не отправлено! Вы пытаетесь отправить слишком длинное сообщение!")
+                                showToast("Выберите город")
                             }
                         }
                     }
                 }
                 true
             }
+
         }
 
         binding.imageInfo.setOnClickListener {
@@ -275,10 +292,12 @@ class MainActivity : AppCompatActivity() {
                     R.id.data_user -> {
                         val intent = Intent(this, UserDataActivity::class.java)
                         startActivity(intent)
+                        finish()
                     }
                     R.id.notification_settings -> {
                         val intent = Intent(this, NotificationSettings::class.java)
                         startActivity(intent)
+                        finish()
                     }
                     R.id.sign_out -> {
                         auth.signOut()
@@ -295,11 +314,13 @@ class MainActivity : AppCompatActivity() {
         binding.textCity.setOnClickListener {
             val intent = Intent(this@MainActivity, UserDataActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         binding.imageProfileChatMessage.setOnClickListener {
             val intent = Intent(this@MainActivity, UserDataActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
     }
@@ -425,6 +446,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showToast(message: String) {
-        Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show()
+        val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
+        toast.setGravity(Gravity.CENTER, 0, 0)
+        toast.show()
     }
 }

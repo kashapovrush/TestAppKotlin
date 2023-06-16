@@ -60,6 +60,7 @@ class FreeChangeActivity : AppCompatActivity() {
         binding.freeButtonBack.setOnClickListener {
             val intent = Intent(this@FreeChangeActivity, FreeChatActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 }

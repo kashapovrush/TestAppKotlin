@@ -83,11 +83,13 @@ class FreeChatActivity : AppCompatActivity() {
         binding.freeTextCity.setOnClickListener {
             val intent = Intent(this@FreeChatActivity, FreeChangeActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         binding.freeButtonBack.setOnClickListener {
             val intent = Intent(this@FreeChatActivity, SignInActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 }

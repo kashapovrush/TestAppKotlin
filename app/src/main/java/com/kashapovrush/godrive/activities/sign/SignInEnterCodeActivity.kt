@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -36,6 +37,7 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
 
             override fun afterTextChanged(s: Editable?) {
                 if (binding.password.text.toString().length == 6) {
+                    runProgressBar()
                     val id = preferenceManager.getString("SignInId")
                     val credential =
                         PhoneAuthProvider.getCredential(
@@ -59,20 +61,16 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
                                             .updateChildren(dataMap)
                                             .addOnCompleteListener {
                                                 if (it.isSuccessful) {
-//                                                    database.child(KEY_COLLECTION_USERS).child(uid).setValue(
-//                                                        User(
-//                                                        "", "", "", "", "", "",
-//                                                            "", ""
-//                                                    )
-//                                                    )
                                                     val intent =
                                                         Intent(
                                                             this@SignInEnterCodeActivity,
                                                             MainActivity::class.java
                                                         )
                                                     startActivity(intent)
+                                                    finish()
                                                 } else {
-
+                                                    toastShow("Ошибка, попробуйте позже :(")
+                                                    stopProgressBar()
                                                 }
                                             }
 
@@ -86,7 +84,8 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
                         }
                     }
                         .addOnFailureListener {
-                            toastShow("Ошибка, попробуйте позже :(")
+                            toastShow("Вы ввели неверный код")
+                            stopProgressBar()
                         }
                 }
             }
@@ -107,5 +106,13 @@ class SignInEnterCodeActivity() : AppCompatActivity() {
 
     override fun onBackPressed() {
 
+    }
+
+    fun runProgressBar() {
+        binding.progressBarEnterCode.visibility = View.VISIBLE
+    }
+
+    fun stopProgressBar() {
+        binding.progressBarEnterCode.visibility = View.INVISIBLE
     }
 }

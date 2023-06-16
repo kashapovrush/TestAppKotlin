@@ -41,6 +41,7 @@ class SignInActivity : AppCompatActivity() {
                     if (it.isSuccessful) {
                         val intent = Intent(this@SignInActivity, MainActivity::class.java)
                         startActivity(intent)
+                        finish()
                     } else {
                         toastShow("Ошибка, попробуйте позже :(")
                         stopProgressBar()
@@ -61,12 +62,14 @@ class SignInActivity : AppCompatActivity() {
                 preferenceManager.putString("SignInId", id)
                 val intent = Intent(this@SignInActivity, SignInEnterCodeActivity::class.java)
                 startActivity(intent)
+                finish()
             }
         }
 
         binding.freeSignIn.setOnClickListener {
             val intent = Intent(this@SignInActivity, FreeChatActivity::class.java)
             startActivity(intent)
+            finish()
         }
 
         binding.buttonSignIn.setOnClickListener {

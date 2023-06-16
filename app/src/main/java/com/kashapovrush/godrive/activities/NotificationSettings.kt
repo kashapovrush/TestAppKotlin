@@ -1,8 +1,13 @@
 package com.kashapovrush.godrive.activities
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -44,6 +49,24 @@ class NotificationSettings : AppCompatActivity() {
         binding.backToMain.setOnClickListener {
             val intent = Intent(this@NotificationSettings, MainActivity::class.java)
             startActivity(intent)
+            finish()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_DENIED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1
+                )
+            }
         }
     }
 
@@ -55,7 +78,8 @@ class NotificationSettings : AppCompatActivity() {
                     return@addOnCompleteListener
                 }
                 val token = it.result
-                database.child(Constants.KEY_FCM).child(city).child(uid).setValue(Notification(token))
+                database.child(Constants.KEY_FCM).child(city).child(uid)
+                    .setValue(Notification(token))
             }
     }
 
