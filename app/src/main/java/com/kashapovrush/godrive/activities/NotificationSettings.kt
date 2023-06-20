@@ -87,4 +87,10 @@ class NotificationSettings : AppCompatActivity() {
         val uid = auth.currentUser?.uid.toString()
         database.child(Constants.KEY_FCM).child(city).child(uid).removeValue()
     }
+
+    override fun onBackPressed() {
+        val intent = Intent(this@NotificationSettings, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
 }

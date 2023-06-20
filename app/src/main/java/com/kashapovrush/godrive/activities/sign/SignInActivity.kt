@@ -2,7 +2,6 @@ package com.kashapovrush.godrive.activities.sign
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +12,7 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.kashapovrush.godrive.activities.FreeChatActivity
 import com.kashapovrush.godrive.activities.MainActivity
 import com.kashapovrush.godrive.databinding.ActivitySignInBinding
 import com.kashapovrush.godrive.utilities.PreferenceManager

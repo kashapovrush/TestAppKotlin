@@ -23,7 +23,7 @@
             android:name=".activities.FreeChangeActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.sign.FreeChatActivity"
+            android:name=".activities.FreeChatActivity"
             android:exported="false" />
         <activity
             android:name=".activities.NotificationSettings"

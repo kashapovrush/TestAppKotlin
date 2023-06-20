@@ -7,9 +7,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import com.kashapovrush.godrive.activities.sign.FreeChatActivity
 import com.kashapovrush.godrive.databinding.ActivityFreeChangeBinding
-import com.kashapovrush.godrive.utilities.Constants
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PREFERENCE_NAME
 import com.kashapovrush.godrive.utilities.PreferenceManager
 
@@ -62,5 +60,11 @@ class FreeChangeActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this@FreeChangeActivity, FreeChatActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

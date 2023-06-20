@@ -1,15 +1,11 @@
-package com.kashapovrush.godrive.activities.sign
+package com.kashapovrush.godrive.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.*
-import com.google.firebase.ktx.Firebase
-import com.kashapovrush.godrive.activities.FreeChangeActivity
-import com.kashapovrush.godrive.activities.UserDataActivity
+import com.kashapovrush.godrive.activities.sign.SignInActivity
 import com.kashapovrush.godrive.adapter.ChatAdapter
 import com.kashapovrush.godrive.databinding.ActivityFreeChatBinding
 import com.kashapovrush.godrive.models.User
@@ -91,5 +87,11 @@ class FreeChatActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this@FreeChatActivity, SignInActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }

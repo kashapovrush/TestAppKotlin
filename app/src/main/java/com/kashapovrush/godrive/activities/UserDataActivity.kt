@@ -80,7 +80,6 @@ class UserDataActivity : AppCompatActivity() {
                                 putTokenToFirebase(listCity[position])
                             }
                         }
-
                 }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -243,5 +242,11 @@ class UserDataActivity : AppCompatActivity() {
 
     private fun toastShow(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onBackPressed() {
+        val intent = Intent(this@UserDataActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
