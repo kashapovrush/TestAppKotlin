@@ -1,9 +1,8 @@
 package com.kashapovrush.godrive.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -16,7 +15,6 @@ import com.kashapovrush.godrive.models.User
 import com.kashapovrush.godrive.utilities.Constants
 import com.kashapovrush.godrive.utilities.PreferenceManager
 import com.kashapovrush.godrive.utilities.ViewFactory
-import java.util.*
 
 class FreeChatActivity : AppCompatActivity() {
 
@@ -36,8 +34,6 @@ class FreeChatActivity : AppCompatActivity() {
         database = FirebaseDatabase.getInstance().reference
         refMessages = FirebaseDatabase.getInstance().reference
         auth = Firebase.auth
-        val uid = auth.currentUser?.uid.toString()
-
     }
 
     override fun onResume() {

@@ -2,7 +2,6 @@ package com.kashapovrush.godrive.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -104,11 +103,10 @@ class UserDataActivity : AppCompatActivity() {
         binding.saveData.setOnClickListener {
             change()
             count++
-            if (count == 10) {
+            if (count == 16) {
                 val intent = Intent(this@UserDataActivity, AppStatistics::class.java)
                 startActivity(intent)
             }
-            Log.i("Rush", count.toString())
         }
 
         binding.buttonBack.setOnClickListener {
@@ -261,11 +259,6 @@ class UserDataActivity : AppCompatActivity() {
 
     private fun toastShow(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.i("Rush", count.toString())
     }
 
     override fun onPause() {
