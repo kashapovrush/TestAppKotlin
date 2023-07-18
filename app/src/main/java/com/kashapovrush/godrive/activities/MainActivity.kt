@@ -32,6 +32,7 @@ import com.kashapovrush.godrive.models.Notification
 import com.kashapovrush.godrive.models.User
 import com.kashapovrush.godrive.utilities.Constants.Companion.BASE_PHOTO_URL
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERS
+import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COUNT_APP
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_FCM
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_FILE_URL
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PREFERENCE_NAME
@@ -86,6 +87,7 @@ class MainActivity : AppCompatActivity() {
         refVoiceNotification =
             FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
         var keyUID = ""
+
 
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener {
@@ -156,16 +158,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        onClickListener()
-    }
-
     override fun onResume() {
         super.onResume()
+        onClickListener()
         initUser()
         initRCView()
         removeMessagesAfterTime()
+        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
+        var number = (0 .. 100000000000).random()
+        database.child(KEY_COUNT_APP).child(uid).child(number.toString()).setValue(cityValue.toString())
     }
 
     private fun removeMessagesAfterTime() {
@@ -360,7 +361,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initUser() {
-
         database.child(KEY_COLLECTION_USERS).child(uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -405,10 +405,7 @@ class MainActivity : AppCompatActivity() {
 
                     }
                 }
-
             }
-
-
             override fun onCancelled(error: DatabaseError) {
             }
         }

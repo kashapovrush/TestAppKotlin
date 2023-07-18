@@ -2,6 +2,7 @@ package com.kashapovrush.godrive.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -41,7 +42,19 @@ class UserDataActivity : AppCompatActivity() {
     private lateinit var newUsername: String
     private lateinit var selectCity: Spinner
     private lateinit var preferenceManager: PreferenceManager
-    val listCity = arrayOf("Выберите город", "Туймазы", "Октябрьский", "Шаран", "Кандры", "Трасса М5")
+    val listCity = arrayOf(
+        "Выберите город",
+        "Уфа",
+        "Трасса М5",
+        "Октябрьский",
+        "Туймазы",
+        "Чишмы",
+        "Кандры",
+        "Буздяк",
+        "Шаран",
+        "Языково"
+    )
+    var count: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,6 +95,7 @@ class UserDataActivity : AppCompatActivity() {
                         }
                 }
             }
+
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
@@ -89,6 +103,12 @@ class UserDataActivity : AppCompatActivity() {
 
         binding.saveData.setOnClickListener {
             change()
+            count++
+            if (count == 10) {
+                val intent = Intent(this@UserDataActivity, AppStatistics::class.java)
+                startActivity(intent)
+            }
+            Log.i("Rush", count.toString())
         }
 
         binding.buttonBack.setOnClickListener {
@@ -154,8 +174,7 @@ class UserDataActivity : AppCompatActivity() {
                         Picasso.get()
                             .load(BASE_PHOTO_URL)
                             .into(binding.imageProfile)
-                    }
-                    else {
+                    } else {
                         Picasso.get()
                             .load(user.photoUrl)
                             .into(binding.imageProfile)
@@ -177,8 +196,8 @@ class UserDataActivity : AppCompatActivity() {
             database.child(KEY_COLLECTION_USERNAMES)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                            changeUsername()
-                        }
+                        changeUsername()
+                    }
 
                     override fun onCancelled(error: DatabaseError) {
                     }
@@ -242,6 +261,16 @@ class UserDataActivity : AppCompatActivity() {
 
     private fun toastShow(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("Rush", count.toString())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        count = 0
     }
 
     override fun onBackPressed() {

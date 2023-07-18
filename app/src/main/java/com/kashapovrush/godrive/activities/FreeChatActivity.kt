@@ -3,8 +3,12 @@ package com.kashapovrush.godrive.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
+import com.google.firebase.ktx.Firebase
 import com.kashapovrush.godrive.activities.sign.SignInActivity
 import com.kashapovrush.godrive.adapter.ChatAdapter
 import com.kashapovrush.godrive.databinding.ActivityFreeChatBinding
@@ -12,6 +16,7 @@ import com.kashapovrush.godrive.models.User
 import com.kashapovrush.godrive.utilities.Constants
 import com.kashapovrush.godrive.utilities.PreferenceManager
 import com.kashapovrush.godrive.utilities.ViewFactory
+import java.util.*
 
 class FreeChatActivity : AppCompatActivity() {
 
@@ -21,6 +26,7 @@ class FreeChatActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     private lateinit var refMessages: DatabaseReference
     private lateinit var messagesListener: ValueEventListener
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,21 +35,25 @@ class FreeChatActivity : AppCompatActivity() {
         preferenceManager = PreferenceManager(applicationContext)
         database = FirebaseDatabase.getInstance().reference
         refMessages = FirebaseDatabase.getInstance().reference
-    }
+        auth = Firebase.auth
+        val uid = auth.currentUser?.uid.toString()
 
-    override fun onStart() {
-        super.onStart()
-        onClickListener()
     }
 
     override fun onResume() {
         super.onResume()
+        onClickListener()
         initRCView()
         if (preferenceManager.getString(Constants.KEY_PREFERENCE_NAME) == null) {
             binding.freeTextCity.text = "Выберите город"
         } else {
             binding.freeTextCity.text = preferenceManager.getString(Constants.KEY_PREFERENCE_NAME)
         }
+
+        val cityValue = preferenceManager.getString(Constants.KEY_PREFERENCE_NAME)
+        val number = (0..999999999999).random()
+
+        database.child(Constants.KEY_COUNT_FREE_APP).child(cityValue.toString()).child(number.toString()).setValue("1")
     }
 
 
