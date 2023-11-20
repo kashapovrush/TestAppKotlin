@@ -2,8 +2,10 @@ package com.kashapovrush.godrive.utilities
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.kashapovrush.godrive.presentation.Application
+import javax.inject.Inject
 
-class PreferenceManager(context: Context) {
+class PreferenceManager @Inject constructor(context: Context) {
 
     private val sharedPreferences: SharedPreferences
 

@@ -1,6 +1,6 @@
 package com.kashapovrush.godrive.utilities
 
-import com.kashapovrush.godrive.activities.MainActivity
+import com.kashapovrush.godrive.presentation.mainChat.MainActivity
 
 class Constants {
     companion object {

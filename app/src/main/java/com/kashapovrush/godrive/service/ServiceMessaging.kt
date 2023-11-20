@@ -9,7 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.kashapovrush.godrive.R
-import com.kashapovrush.godrive.activities.MainActivity
+import com.kashapovrush.godrive.presentation.mainChat.MainActivity
 import com.kashapovrush.godrive.utilities.Constants
 import java.util.*
 
