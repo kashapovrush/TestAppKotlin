@@ -25,30 +25,18 @@
 
     </FrameLayout>
 
-    <EditText
-        android:id="@+id/input_name"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_45sdp"
-        android:layout_marginTop="15dp"
-        android:hint="Enter name"
-        android:paddingStart="@dimen/_10sdp"
-        android:visibility="invisible"
-        android:background="@drawable/background_phone_input"
-        android:layout_margin="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layout_image" />
+
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/bloc_change_city"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_60sdp"
         android:layout_marginStart="@dimen/_13sdp"
         android:layout_marginEnd="@dimen/_13sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/save_data">
+        app:layout_constraintTop_toBottomOf="@+id/layout_image">
 
         <TextView
             android:layout_width="wrap_content"
@@ -79,17 +67,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
-
-    <Button
-        android:id="@+id/save_data"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/background"
-        android:text="Сохранить данные"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_name" />
 
     <Button
         android:id="@+id/button_back"

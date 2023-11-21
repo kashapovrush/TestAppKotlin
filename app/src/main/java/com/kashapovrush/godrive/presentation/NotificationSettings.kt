@@ -13,7 +13,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.kashapovrush.godrive.databinding.ActivityNotificationSettingsBinding
-import com.kashapovrush.godrive.models.Notification
+import com.kashapovrush.godrive.domain.models.Notification
 import com.kashapovrush.godrive.presentation.mainChat.MainActivity
 import com.kashapovrush.godrive.utilities.Constants
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_NOTIFICATION_STATE

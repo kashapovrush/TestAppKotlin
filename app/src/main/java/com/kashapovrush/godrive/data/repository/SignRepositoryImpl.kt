@@ -9,6 +9,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrive.data.database.AppDatabase
 import com.kashapovrush.godrive.domain.sign.SignRepository
 import java.util.concurrent.TimeUnit
@@ -40,4 +42,17 @@ class SignRepositoryImpl @Inject constructor() : SignRepository {
     override fun signInWithCredentialUC(credential: PhoneAuthCredential): Task<AuthResult> {
         return AppDatabase.auth.signInWithCredential(credential)
     }
+
+    override fun getUid(): String {
+        return AppDatabase.auth.currentUser?.uid.toString()
+    }
+
+    override fun getDatabaseReference(): DatabaseReference {
+        return AppDatabase.database
+    }
+
+    override fun getStorageReference(): StorageReference {
+        return AppDatabase.storage
+    }
+
 }

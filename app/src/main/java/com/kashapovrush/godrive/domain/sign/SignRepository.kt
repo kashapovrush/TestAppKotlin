@@ -7,6 +7,8 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.storage.StorageReference
 
 interface SignRepository {
 
@@ -19,4 +21,10 @@ interface SignRepository {
     fun checkAuthState(context: Context, cls: Class<*>)
 
     fun signInWithCredentialUC(credential: PhoneAuthCredential): Task<AuthResult>
+
+    fun getUid(): String
+
+    fun getDatabaseReference(): DatabaseReference
+
+    fun getStorageReference(): StorageReference
 }

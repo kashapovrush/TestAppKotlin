@@ -5,22 +5,22 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrive.databinding.ActivityUserDataBinding
-import com.kashapovrush.godrive.models.Notification
-import com.kashapovrush.godrive.models.User
-import com.kashapovrush.godrive.presentation.AppStatistics
+import com.kashapovrush.godrive.domain.models.Notification
+import com.kashapovrush.godrive.domain.models.User
+import com.kashapovrush.godrive.presentation.Application
+import com.kashapovrush.godrive.presentation.ViewModelFactory
 import com.kashapovrush.godrive.utilities.Constants.Companion.BASE_PHOTO_URL
-import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_CHILD_USERNAME
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_CITY
-import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERNAMES
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERS
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_FCM
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_NOTIFICATION_STATE
@@ -30,18 +30,20 @@ import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PROFILE_IMAGE
 import com.kashapovrush.godrive.utilities.PreferenceManager
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
-import com.theartofdev.edmodo.cropper.CropImageView
+import javax.inject.Inject
 
 class UserDataActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityUserDataBinding
-    private lateinit var database: DatabaseReference
     private lateinit var storage: StorageReference
-    private lateinit var auth: FirebaseAuth
     private lateinit var user: User
-    private lateinit var newUsername: String
-    private lateinit var selectCity: Spinner
     private lateinit var preferenceManager: PreferenceManager
+    private lateinit var uid: String
+    private lateinit var database: DatabaseReference
+    private lateinit var viewModel: UserDataViewModel
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
     val listCity = arrayOf(
         "Выберите город",
         "Уфа",
@@ -54,84 +56,69 @@ class UserDataActivity : AppCompatActivity() {
         "Шаран",
         "Языково"
     )
-    var count: Int = 0
+
+    private val component by lazy {
+        (application as Application).component
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityUserDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
         user = User()
-        database = FirebaseDatabase.getInstance().reference
-        storage = FirebaseStorage.getInstance().reference
-        auth = FirebaseAuth.getInstance()
+        viewModel = ViewModelProvider(this, viewModelFactory)[UserDataViewModel::class.java]
+        uid = viewModel.getUid()
+        database = viewModel.getDatabaseReference()
+        storage = viewModel.getStorageReference()
         preferenceManager = PreferenceManager(applicationContext)
         initDataUser()
-        selectCity = binding.selectCity
-        var arrayAdapter = ArrayAdapter<String>(
-            this@UserDataActivity,
+        var arrayAdapter = ArrayAdapter(
+            this,
             android.R.layout.simple_spinner_dropdown_item,
             listCity
         )
-        selectCity.adapter = arrayAdapter
-        selectCity.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val uid = auth.currentUser?.uid.toString()
-                if (listCity[position] != listCity[0]) {
-                    val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
-                    deletePreviousToken(cityValue.toString())
-                    database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_CITY)
-                        .setValue(listCity[position]).addOnCompleteListener {
-                            if (it.isSuccessful) {
-                                preferenceManager.putString(KEY_PREFERENCE_NAME, listCity[position])
-                                user.city = listCity[position]
-                                putTokenToFirebase(listCity[position])
-                            }
-                        }
-                }
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-        }
-
-        binding.saveData.setOnClickListener {
-            change()
-            count++
-            if (count == 16) {
-                val intent = Intent(this@UserDataActivity, AppStatistics::class.java)
-                startActivity(intent)
-            }
-        }
+        binding.selectCity.adapter = arrayAdapter
+        binding.selectCity.onItemSelectedListener = onItemSelectedListener()
 
         binding.buttonBack.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            startActivity(MainActivity.newIntent(this))
             finish()
         }
 
         binding.layoutImage.setOnClickListener {
-            changePhotoUser()
+            viewModel.changePhotoUser(this)
         }
     }
 
-    private fun changePhotoUser() {
-        CropImage.activity()
-            .setAspectRatio(1, 1)
-            .setRequestedSize(200, 200)
-            .setCropShape(CropImageView.CropShape.OVAL)
-            .start(this)
+    private fun onItemSelectedListener() = object : AdapterView.OnItemSelectedListener {
+
+        override fun onItemSelected(
+            parent: AdapterView<*>?,
+            view: View?,
+            position: Int,
+            id: Long
+        ) {
+            if (listCity[position] != listCity[0]) {
+                val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
+                deletePreviousToken(cityValue.toString())
+                database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_CITY)
+                    .setValue(listCity[position]).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            preferenceManager.putString(KEY_PREFERENCE_NAME, listCity[position])
+                            user.city = listCity[position]
+                            putTokenToFirebase(listCity[position])
+                        }
+                    }
+            }
+        }
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        val uid = auth.currentUser?.uid.toString()
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
             && data != null
         ) {
@@ -147,9 +134,7 @@ class UserDataActivity : AppCompatActivity() {
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {
                                         user.photoUrl = photoUrl
-                                        Picasso.get()
-                                            .load(user.photoUrl)
-                                            .into(binding.imageProfile)
+                                        getPhotoUser()
                                         toastShow("Данные изменены")
 
                                     }
@@ -162,21 +147,15 @@ class UserDataActivity : AppCompatActivity() {
     }
 
     private fun initDataUser() {
-        val uid = auth.currentUser?.uid.toString()
         database.child(KEY_COLLECTION_USERS).child(uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     user = snapshot.getValue(User::class.java) ?: User()
-                    binding.inputName.setText(user.username)
                     binding.choiseCity.text = user.city
                     if (user.photoUrl.isEmpty()) {
-                        Picasso.get()
-                            .load(BASE_PHOTO_URL)
-                            .into(binding.imageProfile)
+                        getBasePhoto()
                     } else {
-                        Picasso.get()
-                            .load(user.photoUrl)
-                            .into(binding.imageProfile)
+                        getPhotoUser()
                     }
                 }
 
@@ -186,61 +165,19 @@ class UserDataActivity : AppCompatActivity() {
             })
     }
 
-    private fun change() {
-        val uid = auth.currentUser?.uid.toString()
-        newUsername = binding.inputName.text.toString()
-        if (newUsername.isEmpty()) {
-            toastShow("Введите username")
-        } else {
-            database.child(KEY_COLLECTION_USERNAMES)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        changeUsername()
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                    }
-
-                })
-        }
+    private fun getPhotoUser() {
+        Picasso.get()
+            .load(user.photoUrl)
+            .into(binding.imageProfile)
     }
 
-    private fun changeUsername() {
-        val uid: String = auth.currentUser?.uid.toString()
-        database.child(KEY_COLLECTION_USERNAMES).child(newUsername).setValue(uid)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    updateCurrentUsername()
-                }
-            }
-    }
-
-    private fun updateCurrentUsername() {
-        val uid = auth.currentUser?.uid.toString()
-        database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_CHILD_USERNAME)
-            .setValue(newUsername)
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    toastShow("Данные обновлены")
-                    deletedOldUsername()
-                } else {
-                    toastShow("Error")
-                }
-            }
-    }
-
-    private fun deletedOldUsername() {
-        database.child(KEY_COLLECTION_USERNAMES).child(user.username).removeValue()
-            .addOnCompleteListener {
-                if (it.isSuccessful) {
-                    toastShow("Успешно")
-                    user.username = newUsername
-                }
-            }
+    private fun getBasePhoto() {
+        Picasso.get()
+            .load(BASE_PHOTO_URL)
+            .into(binding.imageProfile)
     }
 
     private fun putTokenToFirebase(city: String) {
-        val uid = auth.currentUser?.uid.toString()
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener {
                 if (!it.isSuccessful) {
@@ -254,7 +191,6 @@ class UserDataActivity : AppCompatActivity() {
     }
 
     private fun deletePreviousToken(city: String) {
-        val uid = auth.currentUser?.uid.toString()
         database.child(KEY_FCM).child(city).child(uid).removeValue()
     }
 
@@ -262,14 +198,9 @@ class UserDataActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    override fun onPause() {
-        super.onPause()
-        count = 0
-    }
 
     override fun onBackPressed() {
-        val intent = Intent(this@UserDataActivity, MainActivity::class.java)
-        startActivity(intent)
+        startActivity(MainActivity.newIntent(this))
         finish()
     }
 }

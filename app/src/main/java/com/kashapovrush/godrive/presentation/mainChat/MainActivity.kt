@@ -27,11 +27,11 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrive.R
 import com.kashapovrush.godrive.presentation.sign.SignInActivity
-import com.kashapovrush.godrive.adapter.ChatAdapter
+import com.kashapovrush.godrive.presentation.adapter.ChatAdapter
 import com.kashapovrush.godrive.data.database.AppDatabase
 import com.kashapovrush.godrive.databinding.ActivityMainBinding
-import com.kashapovrush.godrive.models.Notification
-import com.kashapovrush.godrive.models.User
+import com.kashapovrush.godrive.domain.models.Notification
+import com.kashapovrush.godrive.domain.models.User
 import com.kashapovrush.godrive.presentation.NotificationSettings
 import com.kashapovrush.godrive.utilities.Constants.Companion.BASE_PHOTO_URL
 import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERS

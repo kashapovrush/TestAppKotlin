@@ -1,6 +1,8 @@
 package com.kashapovrush.godrive.di
 
 import androidx.lifecycle.ViewModel
+import com.kashapovrush.godrive.presentation.mainChat.UserDataViewModel
+import com.kashapovrush.godrive.presentation.sign.SignInEnterCodeViewModel
 import com.kashapovrush.godrive.presentation.sign.SignIngViewModel
 import dagger.Binds
 import dagger.Module
@@ -13,4 +15,14 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(SignIngViewModel::class)
     fun bindSignInViewModel(viewModel: SignIngViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SignInEnterCodeViewModel::class)
+    fun bindSignInEnterCodeViewModel(viewModel: SignInEnterCodeViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(UserDataViewModel::class)
+    fun bindUserDataViewModel(viewModel: UserDataViewModel): ViewModel
 }
