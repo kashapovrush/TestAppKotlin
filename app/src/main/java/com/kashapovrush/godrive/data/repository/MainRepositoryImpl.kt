@@ -1,7 +1,8 @@
 package com.kashapovrush.godrive.data.repository
 
 import android.app.Activity
-import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -14,7 +15,7 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import javax.inject.Inject
 
-class MainRepositoryImpl @Inject constructor(private var user: User) : MainRepository {
+class MainRepositoryImpl @Inject constructor() : MainRepository {
 
     override fun changePhotoUser(activity: Activity) {
         CropImage.activity()
@@ -22,6 +23,30 @@ class MainRepositoryImpl @Inject constructor(private var user: User) : MainRepos
             .setRequestedSize(200, 200)
             .setCropShape(CropImageView.CropShape.OVAL)
             .start(activity)
+    }
+
+    override fun initDataUser(view: ImageView, text: TextView) {
+        var user = User()
+        AppDatabase.database.child(Constants.KEY_COLLECTION_USERS).child(AppDatabase.uid)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    user = snapshot.getValue(User::class.java) ?: User()
+                    text.text = user.city
+                    if (user.photoUrl.isEmpty()) {
+                        Picasso.get()
+                            .load(Constants.BASE_PHOTO_URL)
+                            .into(view)
+                    } else {
+                        Picasso.get()
+                            .load(user.photoUrl)
+                            .into(view)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
     }
 
 }

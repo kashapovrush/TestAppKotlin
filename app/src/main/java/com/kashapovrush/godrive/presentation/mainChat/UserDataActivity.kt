@@ -36,11 +36,11 @@ class UserDataActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityUserDataBinding
     private lateinit var storage: StorageReference
-    private lateinit var user: User
     private lateinit var preferenceManager: PreferenceManager
     private lateinit var uid: String
     private lateinit var database: DatabaseReference
     private lateinit var viewModel: UserDataViewModel
+    private lateinit var user: User
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -61,18 +61,20 @@ class UserDataActivity : AppCompatActivity() {
         (application as Application).component
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         component.inject(this)
         super.onCreate(savedInstanceState)
         binding = ActivityUserDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        user = User()
+
         viewModel = ViewModelProvider(this, viewModelFactory)[UserDataViewModel::class.java]
         uid = viewModel.getUid()
         database = viewModel.getDatabaseReference()
         storage = viewModel.getStorageReference()
         preferenceManager = PreferenceManager(applicationContext)
-        initDataUser()
+
+        viewModel.initUserData(binding.imageProfile, binding.choiseCity)
         var arrayAdapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
@@ -99,6 +101,8 @@ class UserDataActivity : AppCompatActivity() {
             position: Int,
             id: Long
         ) {
+
+            var user = User()
             if (listCity[position] != listCity[0]) {
                 val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
                 deletePreviousToken(cityValue.toString())
@@ -122,6 +126,8 @@ class UserDataActivity : AppCompatActivity() {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK
             && data != null
         ) {
+
+            var user = User()
             val uri = CropImage.getActivityResult(data).uri
             val path = storage.child(KEY_PROFILE_IMAGE).child(uid)
             path.putFile(uri).addOnCompleteListener { task1 ->
@@ -134,7 +140,9 @@ class UserDataActivity : AppCompatActivity() {
                                 .addOnCompleteListener {
                                     if (it.isSuccessful) {
                                         user.photoUrl = photoUrl
-                                        getPhotoUser()
+                                        Picasso.get()
+                                            .load(user.photoUrl)
+                                            .into(binding.imageProfile)
                                         toastShow("Данные изменены")
 
                                     }
@@ -144,37 +152,6 @@ class UserDataActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun initDataUser() {
-        database.child(KEY_COLLECTION_USERS).child(uid)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    user = snapshot.getValue(User::class.java) ?: User()
-                    binding.choiseCity.text = user.city
-                    if (user.photoUrl.isEmpty()) {
-                        getBasePhoto()
-                    } else {
-                        getPhotoUser()
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-
-            })
-    }
-
-    private fun getPhotoUser() {
-        Picasso.get()
-            .load(user.photoUrl)
-            .into(binding.imageProfile)
-    }
-
-    private fun getBasePhoto() {
-        Picasso.get()
-            .load(BASE_PHOTO_URL)
-            .into(binding.imageProfile)
     }
 
     private fun putTokenToFirebase(city: String) {

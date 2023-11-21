@@ -1,8 +1,6 @@
 package com.kashapovrush.godrive.domain.models
 
-import javax.inject.Inject
-
-data class User @Inject constructor(
+data class User (
     var username: String = "",
     var message: String = "",
     var type: String = "",
