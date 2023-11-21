@@ -1,10 +1,12 @@
 package com.kashapovrush.godrive.utilities
 
-import com.kashapovrush.godrive.activities.MainActivity
+import com.kashapovrush.godrive.presentation.mainChat.MainActivity
 
 class Constants {
     companion object {
         const val KEY_COLLECTION_USERS = "users"
+        const val KEY_COUNT_APP = "count_app"
+        const val KEY_COUNT_FREE_APP = "count_free_app"
         const val KEY_COLLECTION_USERNAMES = "usernames"
         const val KEY_PREFERENCE_NAME = "message"
         const val KEY_SIGN_IN = 100
