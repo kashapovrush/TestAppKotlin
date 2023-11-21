@@ -8,7 +8,6 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrive.domain.mainChat.ChangePhotoUserUseCase
 import com.kashapovrush.godrive.domain.mainChat.InitDataUserUseCase
-import com.kashapovrush.godrive.domain.mainChat.SetCityValue
 import com.kashapovrush.godrive.domain.sign.GetDatabaseReferenceUseCase
 import com.kashapovrush.godrive.domain.sign.GetStorageReferenceUseCase
 import com.kashapovrush.godrive.domain.sign.GetUidUseCase
@@ -19,8 +18,7 @@ class UserDataViewModel @Inject constructor(
     private val getDatabaseReferenceUseCase: GetDatabaseReferenceUseCase,
     private val getStorageReferenceUseCase: GetStorageReferenceUseCase,
     private val changePhotoUserUseCase: ChangePhotoUserUseCase,
-    private val initDataUserUseCase: InitDataUserUseCase,
-    private val setCityValue: SetCityValue
+    private val initDataUserUseCase: InitDataUserUseCase
 ): ViewModel() {
 
     fun getUid(): String {
@@ -39,12 +37,7 @@ class UserDataViewModel @Inject constructor(
         changePhotoUserUseCase(activity)
     }
 
-    fun initUserData(view: ImageView, text: TextView) {
+    fun initUserData(text: TextView, view: ImageView) {
         initDataUserUseCase(view, text)
     }
-
-    fun setCityValue(listOfCities: Array<String>, city: String, position: Int, state: Boolean) {
-        setCityValue(listOfCities, city, position, state)
-    }
-
 }

@@ -8,6 +8,6 @@ import javax.inject.Inject
 class InitDataUserUseCase @Inject constructor(private val repository: MainRepository) {
 
     operator fun invoke(view: ImageView, text: TextView) {
-       repository.initDataUser(view, text)
+       repository.initUserData(view, text)
     }
 }
