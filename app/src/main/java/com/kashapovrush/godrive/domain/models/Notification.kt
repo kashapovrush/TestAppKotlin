@@ -2,6 +2,6 @@ package com.kashapovrush.godrive.domain.models
 
 import javax.inject.Inject
 
-data class Notification @Inject constructor(
+data class Notification (
     val token: String = ""
 )
