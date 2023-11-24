@@ -11,4 +11,6 @@ interface MainRepository {
 
     fun initDataUser(viewImage: ImageView, text: TextView)
 
+    fun setCityValue(listOfCities: Array<String>, city: String, position: Int, state: Boolean)
+
 }

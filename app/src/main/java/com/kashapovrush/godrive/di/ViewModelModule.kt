@@ -1,6 +1,7 @@
 package com.kashapovrush.godrive.di
 
 import androidx.lifecycle.ViewModel
+import com.kashapovrush.godrive.presentation.mainChat.MainViewModel
 import com.kashapovrush.godrive.presentation.mainChat.UserDataViewModel
 import com.kashapovrush.godrive.presentation.sign.SignInEnterCodeViewModel
 import com.kashapovrush.godrive.presentation.sign.SignIngViewModel
@@ -25,4 +26,9 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(UserDataViewModel::class)
     fun bindUserDataViewModel(viewModel: UserDataViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MainViewModel::class)
+    fun bindMainViewModel(viewModel: MainViewModel): ViewModel
 }
