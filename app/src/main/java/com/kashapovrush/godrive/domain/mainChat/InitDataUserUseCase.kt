@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class InitDataUserUseCase @Inject constructor(private val repository: MainRepository) {
 
-    operator fun invoke(view: ImageView, text: TextView) {
-       repository.initUserData(view, text)
+    operator fun invoke(view: ImageView, text: TextView, state: Boolean) {
+       repository.initUserData(view, text, state)
     }
 }
