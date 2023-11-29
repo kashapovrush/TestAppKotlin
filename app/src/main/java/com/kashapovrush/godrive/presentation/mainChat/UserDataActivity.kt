@@ -87,11 +87,13 @@ class UserDataActivity : AppCompatActivity() {
         binding.imageProfile,
         preferenceManager.getString(KEY_PREFERENCE_NAME) != null
         )
+
         var arrayAdapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_dropdown_item,
             listCity
         )
+
         binding.selectCity.adapter = arrayAdapter
         binding.selectCity.onItemSelectedListener = viewModel.selectedCity(
             listCity,

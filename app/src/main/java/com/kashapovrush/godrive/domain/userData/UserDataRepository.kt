@@ -1,4 +1,4 @@
-package com.kashapovrush.godrive.domain.mainChat
+package com.kashapovrush.godrive.domain.userData
 
 import android.app.Activity
 import android.content.Context
@@ -7,13 +7,13 @@ import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 
-interface MainRepository {
+interface UserDataRepository {
 
     fun changePhotoUser(activity: Activity)
 
     fun initUserData(view: ImageView, text: TextView, state: Boolean)
 
-    fun select(
+    fun selectCity(
         listCity: Array<String>,
         cityValue: String,
         state: Boolean,

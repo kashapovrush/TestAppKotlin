@@ -1,10 +1,9 @@
-package com.kashapovrush.godrive.domain.mainChat
+package com.kashapovrush.godrive.domain.userData
 
 import android.widget.AdapterView
-import java.text.FieldPosition
 import javax.inject.Inject
 
-class SelectUseCase @Inject constructor(private val repository: MainRepository) {
+class SelectCityUseCase @Inject constructor(private val repository: UserDataRepository) {
 
     operator fun invoke(
         listCity: Array<String>,
@@ -12,6 +11,6 @@ class SelectUseCase @Inject constructor(private val repository: MainRepository) 
         state: Boolean,
         putCityValue: (position: Int) -> Unit
     ): AdapterView.OnItemSelectedListener {
-        return repository.select(listCity, cityValue, state, putCityValue)
+        return repository.selectCity(listCity, cityValue, state, putCityValue)
     }
 }

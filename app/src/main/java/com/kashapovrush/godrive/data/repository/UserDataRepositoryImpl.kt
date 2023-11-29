@@ -3,7 +3,6 @@ package com.kashapovrush.godrive.data.repository
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ImageView
@@ -15,7 +14,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.kashapovrush.godrive.data.database.AppDatabase
-import com.kashapovrush.godrive.domain.mainChat.MainRepository
+import com.kashapovrush.godrive.domain.userData.UserDataRepository
 import com.kashapovrush.godrive.domain.models.Notification
 import com.kashapovrush.godrive.domain.models.User
 import com.kashapovrush.godrive.utilities.Constants
@@ -24,7 +23,7 @@ import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import javax.inject.Inject
 
-class MainRepositoryImpl @Inject constructor() : MainRepository {
+class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
 
     override fun changePhotoUser(activity: Activity) {
         CropImage.activity()
@@ -61,7 +60,7 @@ class MainRepositoryImpl @Inject constructor() : MainRepository {
             })
     }
 
-    override fun select(
+    override fun selectCity(
         listCity: Array<String>,
         cityValue: String,
         state: Boolean,
