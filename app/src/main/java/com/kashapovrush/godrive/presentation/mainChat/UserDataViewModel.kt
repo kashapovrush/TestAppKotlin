@@ -1,13 +1,18 @@
 package com.kashapovrush.godrive.presentation.mainChat
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.storage.StorageReference
-import com.kashapovrush.godrive.domain.mainChat.ChangePhotoUserUseCase
-import com.kashapovrush.godrive.domain.mainChat.InitDataUserUseCase
+import com.kashapovrush.godrive.domain.userData.ChangePhotoUserUseCase
+import com.kashapovrush.godrive.domain.userData.InitDataUserUseCase
+import com.kashapovrush.godrive.domain.userData.SelectCityUseCase
+import com.kashapovrush.godrive.domain.userData.SetImageUserUseCase
 import com.kashapovrush.godrive.domain.sign.GetDatabaseReferenceUseCase
 import com.kashapovrush.godrive.domain.sign.GetStorageReferenceUseCase
 import com.kashapovrush.godrive.domain.sign.GetUidUseCase
@@ -18,8 +23,10 @@ class UserDataViewModel @Inject constructor(
     private val getDatabaseReferenceUseCase: GetDatabaseReferenceUseCase,
     private val getStorageReferenceUseCase: GetStorageReferenceUseCase,
     private val changePhotoUserUseCase: ChangePhotoUserUseCase,
-    private val initDataUserUseCase: InitDataUserUseCase
-): ViewModel() {
+    private val initDataUserUseCase: InitDataUserUseCase,
+    private val selectCityUseCase: SelectCityUseCase,
+    private val setImageUserUseCase: SetImageUserUseCase
+) : ViewModel() {
 
     fun getUid(): String {
         return getUidUseCase()
@@ -37,8 +44,20 @@ class UserDataViewModel @Inject constructor(
         changePhotoUserUseCase(activity)
     }
 
-    fun initUserData(view: ImageView, text: TextView) {
-        initDataUserUseCase(view, text)
+    fun initUserData(text: TextView, view: ImageView, state: Boolean) {
+        initDataUserUseCase(view, text, state)
     }
 
+    fun selectedCity(
+        listCity: Array<String>,
+        cityValue: String,
+        state: Boolean,
+        putCityValue: (position: Int) -> Unit
+    ): AdapterView.OnItemSelectedListener {
+        return selectCityUseCase(listCity, cityValue, state, putCityValue)
+    }
+
+    fun setImageUser(requestCode: Int, resultCode: Int, data: Intent?, view: ImageView, context: Context) {
+        setImageUserUseCase(requestCode, resultCode, data, view, context)
+    }
 }

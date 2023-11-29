@@ -1,9 +1,9 @@
-package com.kashapovrush.godrive.domain.mainChat
+package com.kashapovrush.godrive.domain.userData
 
 import android.app.Activity
 import javax.inject.Inject
 
-class ChangePhotoUserUseCase @Inject constructor(private val repository: MainRepository) {
+class ChangePhotoUserUseCase @Inject constructor(private val repository: UserDataRepository) {
 
     operator fun invoke(activity: Activity) {
         repository.changePhotoUser(activity)
