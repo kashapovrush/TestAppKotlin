@@ -1,5 +1,7 @@
 package com.kashapovrush.godrive.presentation.mainChat
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -83,9 +85,9 @@ class UserDataActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.initUserData(
-                binding.choiseCity,
-        binding.imageProfile,
-        preferenceManager.getString(KEY_PREFERENCE_NAME) != null
+            binding.choiseCity,
+            binding.imageProfile,
+            preferenceManager.getString(KEY_PREFERENCE_NAME) != null
         )
 
         var arrayAdapter = ArrayAdapter(
@@ -120,8 +122,16 @@ class UserDataActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         startActivity(MainActivity.newIntent(this))
         finish()
+    }
+
+    companion object {
+
+        fun newIntent(context: Context): Intent {
+            return Intent(context, UserDataActivity::class.java)
+        }
     }
 }

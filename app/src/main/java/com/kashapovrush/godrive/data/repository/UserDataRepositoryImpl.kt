@@ -9,10 +9,17 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.signin.internal.Storage
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrive.data.database.AppDatabase
 import com.kashapovrush.godrive.domain.userData.UserDataRepository
 import com.kashapovrush.godrive.domain.models.Notification
@@ -25,6 +32,8 @@ import javax.inject.Inject
 
 class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
 
+    private var auth = Firebase.auth
+
     override fun changePhotoUser(activity: Activity) {
         CropImage.activity()
             .setAspectRatio(1, 1)
@@ -34,7 +43,9 @@ class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
     }
 
     override fun initUserData(view: ImageView, text: TextView, state: Boolean) {
-        AppDatabase.database.child(Constants.KEY_COLLECTION_USERS).child(AppDatabase.uid)
+        val uid = auth.currentUser?.uid.toString()
+        val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+        database.child(Constants.KEY_COLLECTION_USERS).child(uid)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                    var user = snapshot.getValue(User::class.java) ?: User()
@@ -68,6 +79,8 @@ class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
     ) =
         object : AdapterView.OnItemSelectedListener {
             var user = User()
+            val uid = auth.currentUser?.uid.toString()
+            val database: DatabaseReference = FirebaseDatabase.getInstance().reference
 
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -77,8 +90,8 @@ class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
             ) {
                 if (listCity[position] != listCity[0]) {
                     deletePreviousToken(cityValue)
-                    AppDatabase.database.child(Constants.KEY_COLLECTION_USERS)
-                        .child(AppDatabase.uid).child(Constants.KEY_CITY)
+                    database.child(Constants.KEY_COLLECTION_USERS)
+                        .child(uid).child(Constants.KEY_CITY)
                         .setValue(listCity[position]).addOnCompleteListener {
                             if (it.isSuccessful) {
                                 putCityValue(position)
@@ -95,17 +108,20 @@ class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
 
     override fun setImageUser(requestCode: Int, resultCode: Int, data: Intent?, view: ImageView, context: Context) {
         var user = User()
+        val uid = auth.currentUser?.uid.toString()
+        val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+        val storage: StorageReference = FirebaseStorage.getInstance().reference
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && resultCode == AppCompatActivity.RESULT_OK
             && data != null
         ) {
             val uri = CropImage.getActivityResult(data).uri
-            val path = AppDatabase.storage.child(Constants.KEY_PROFILE_IMAGE).child(AppDatabase.uid)
+            val path = storage.child(Constants.KEY_PROFILE_IMAGE).child(uid)
             path.putFile(uri).addOnCompleteListener { task1 ->
                 if (task1.isSuccessful) {
                     path.downloadUrl.addOnCompleteListener { task2 ->
                         if (task2.isSuccessful) {
                             val photoUrl = task2.result.toString()
-                            AppDatabase.database.child(Constants.KEY_COLLECTION_USERS).child(AppDatabase.uid).child(
+                            database.child(Constants.KEY_COLLECTION_USERS).child(uid).child(
                                 Constants.KEY_PHOTO_URL
                             )
                                 .setValue(photoUrl)
@@ -131,11 +147,15 @@ class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
     }
 
     private fun deletePreviousToken(city: String) {
-        AppDatabase.database.child(Constants.KEY_FCM).child(city).child(AppDatabase.uid)
+        val uid = auth.currentUser?.uid.toString()
+        val database: DatabaseReference = FirebaseDatabase.getInstance().reference
+        database.child(Constants.KEY_FCM).child(city).child(uid)
             .removeValue()
     }
 
     private fun putTokenToFirebase(city: String, state: Boolean) {
+        val uid = auth.currentUser?.uid.toString()
+        val database: DatabaseReference = FirebaseDatabase.getInstance().reference
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener {
                 if (!it.isSuccessful) {
@@ -143,7 +163,7 @@ class UserDataRepositoryImpl @Inject constructor() : UserDataRepository {
                 }
                 val token = it.result
                 if (state) {
-                    AppDatabase.database.child(Constants.KEY_FCM).child(city).child(AppDatabase.uid)
+                    database.child(Constants.KEY_FCM).child(city).child(uid)
                         .setValue(Notification(token))
                 }
             }

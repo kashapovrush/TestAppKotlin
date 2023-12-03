@@ -3,8 +3,9 @@ package com.kashapovrush.godrive.utilities
 import android.media.MediaRecorder
 import com.kashapovrush.godrive.utilities.Constants.Companion.mainActivity
 import java.io.File
+import javax.inject.Inject
 
-class VoiceRecorder {
+class VoiceRecorder @Inject constructor() {
 
     private val mediaRecorder = MediaRecorder()
     private lateinit var file: File
