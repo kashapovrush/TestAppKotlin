@@ -1,6 +1,7 @@
 package com.kashapovrush.godrive.presentation
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -89,9 +90,9 @@ class NotificationSettings : AppCompatActivity() {
         database.child(Constants.KEY_FCM).child(city).child(uid).removeValue()
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        val intent = Intent(this@NotificationSettings, MainActivity::class.java)
-        startActivity(intent)
+        startActivity(MainActivity.newIntent(this))
         finish()
     }
 }

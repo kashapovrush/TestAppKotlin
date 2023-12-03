@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class SetNotificationUseCase @Inject constructor(private val repository: MainRepository) {
 
-    operator fun invoke(key: String, context: Context, cityValue: String, textBody: String): ChildEventListener {
-        return repository.setNotificationListener(key, context, cityValue, textBody)
+    operator fun invoke(key: String, context: Context, textBody: String): ChildEventListener {
+        return repository.setNotificationListener(key, context, textBody)
     }
 }

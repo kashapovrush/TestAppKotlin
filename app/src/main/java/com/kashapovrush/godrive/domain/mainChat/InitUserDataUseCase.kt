@@ -11,10 +11,8 @@ class InitUserDataUseCase @Inject constructor(private val repository: MainReposi
     operator fun invoke(
         view: ImageView,
         text: TextView,
-        city: String,
-        state: Boolean,
         getUser: (snapshot: DataSnapshot) -> Unit
     ) {
-        repository.initUserData(view, text, city, state, getUser)
+        repository.initUserData(view, text, getUser)
     }
 }

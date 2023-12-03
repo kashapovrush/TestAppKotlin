@@ -1,5 +1,7 @@
 package com.kashapovrush.godrive.presentation.mainChat
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -120,8 +122,16 @@ class UserDataActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         startActivity(MainActivity.newIntent(this))
         finish()
+    }
+
+    companion object {
+
+        fun newIntent(context: Context): Intent {
+            return Intent(context, UserDataActivity::class.java)
+        }
     }
 }

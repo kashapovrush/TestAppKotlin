@@ -4,15 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.MotionEvent
 import android.view.View
 import android.widget.PopupMenu
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,27 +19,15 @@ import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrive.R
-import com.kashapovrush.godrive.presentation.sign.SignInActivity
-import com.kashapovrush.godrive.presentation.adapter.ChatAdapter
 import com.kashapovrush.godrive.databinding.ActivityMainBinding
 import com.kashapovrush.godrive.domain.models.Notification
 import com.kashapovrush.godrive.domain.models.User
 import com.kashapovrush.godrive.presentation.Application
 import com.kashapovrush.godrive.presentation.NotificationSettings
 import com.kashapovrush.godrive.presentation.ViewModelFactory
-import com.kashapovrush.godrive.utilities.Constants.Companion.BASE_PHOTO_URL
-import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COLLECTION_USERS
-import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_COUNT_APP
-import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_FCM
-import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_FILE_URL
-import com.kashapovrush.godrive.utilities.Constants.Companion.KEY_PREFERENCE_NAME
-import com.kashapovrush.godrive.utilities.Constants.Companion.TYPE_TEXT
-import com.kashapovrush.godrive.utilities.Constants.Companion.TYPE_VOICE
+import com.kashapovrush.godrive.presentation.sign.SignInActivity
 import com.kashapovrush.godrive.utilities.Constants.Companion.mainActivity
-import com.kashapovrush.godrive.utilities.PreferenceManager
-import com.kashapovrush.godrive.utilities.ViewFactory
 import com.kashapovrush.godrive.utilities.VoiceRecorder
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,7 +38,6 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var auth: FirebaseAuth
-    private lateinit var adapter: ChatAdapter
     private lateinit var storage: StorageReference
     private lateinit var user: User
     private lateinit var notification: Notification
@@ -67,7 +50,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notificationTextListener: ChildEventListener
     private lateinit var notificationVoiceListener: ChildEventListener
     private lateinit var uid: String
-    private lateinit var preferenceManager: PreferenceManager
     private lateinit var viewModel: MainViewModel
 
     @Inject
@@ -90,17 +72,11 @@ class MainActivity : AppCompatActivity() {
         uid = viewModel.getUid()
         storage = viewModel.getStorageReference()
         database = viewModel.getDatabaseReference()
-        preferenceManager = PreferenceManager(applicationContext)
-        user = User()
-
+        user = viewModel.getUser()
         initUser()
-        notification = Notification()
-
-        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
-        refTextNotification =
-            FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
-        refVoiceNotification =
-            FirebaseDatabase.getInstance().getReference(KEY_FCM).child(cityValue.toString())
+        notification = viewModel.getNotification()
+        refTextNotification =viewModel.getReferenceNotification()
+        refVoiceNotification =viewModel.getReferenceNotification()
         var keyUID = ""
 
 
@@ -114,14 +90,12 @@ class MainActivity : AppCompatActivity() {
         notificationTextListener = viewModel.setNotification(
             keyUID,
             this,
-            cityValue.toString(),
             "Новое сообщение"
         )
 
         notificationVoiceListener = viewModel.setNotification(
             keyUID,
             this,
-            cityValue.toString(),
             "Новое голосовое сообщение"
         )
     }
@@ -135,15 +109,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loggedInUserCounter() {
-        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
         var number = (0..100000000000).random()
-        viewModel.loggedInUserCounter(cityValue.toString(), number)
+        viewModel.loggedInUserCounter(number)
     }
 
     private fun removeMessagesAfterTime() {
-        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
         val time: Long = Date().time - 3 * 60 * 60 * 1000
-        viewModel.removeMessageAfterTime(cityValue.toString(), time)
+        viewModel.removeMessageAfterTime(time)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -163,9 +135,7 @@ class MainActivity : AppCompatActivity() {
         binding.buttonTextSend.setOnClickListener {
             Log.d("TestUserData", "click")
             viewModel.sendTextMessage(
-                preferenceManager.getString(KEY_PREFERENCE_NAME) == null,
                 binding.inputMessage,
-                preferenceManager.getString(KEY_PREFERENCE_NAME).toString(),
                 {
                     refTextNotification.addChildEventListener(notificationTextListener)
                 },
@@ -177,39 +147,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         CoroutineScope(Dispatchers.IO).launch {
-            binding.buttonVoiceSend.setOnTouchListener { v, event ->
-                if (checkPermission(android.Manifest.permission.RECORD_AUDIO)) {
-                    val messageKey = database.child(KEY_PREFERENCE_NAME).push().key.toString()
-                    if (event.action == MotionEvent.ACTION_DOWN) {
-                        val beginTime = System.currentTimeMillis()
-                        preferenceManager.putLong("keyTime", beginTime)
-                        binding.inputMessage.setText("Запись...")
-                        voiceRecorder.startRecorder(messageKey)
-
-                    } else if (event.action == MotionEvent.ACTION_UP) {
-
-                        binding.inputMessage.setText("")
-                        voiceRecorder.stopRecorder { file, messageKey ->
-                            val endTime = System.currentTimeMillis()
-                            if (preferenceManager.getString(KEY_PREFERENCE_NAME) != null) {
-                                if (endTime - preferenceManager.getLong("keyTime") <= 10000) {
-                                    uploadVoiceToStorage(
-                                        Uri.fromFile(file),
-                                        messageKey,
-                                        TYPE_VOICE
-                                    )
-                                } else {
-                                    showToast("Голосовое сообщение не отправлено! Вы пытаетесь отправить слишком длинное сообщение!")
-                                }
-                            } else {
-                                showToast("Выберите город")
-                            }
-                        }
-                    }
+            binding.buttonVoiceSend.setOnTouchListener { _, event ->
+                viewModel.sendVoiceMessage(
+                    checkPermission(android.Manifest.permission.RECORD_AUDIO),
+                    viewModel.getMessageKey(),
+                    event,
+                    binding.inputMessage,
+                    user,
+                    this@MainActivity)
+                 {
+                    refVoiceNotification.addChildEventListener(notificationVoiceListener)
                 }
                 true
             }
-
         }
 
         binding.imageInfo.setOnClickListener {
@@ -222,8 +172,7 @@ class MainActivity : AppCompatActivity() {
             menu.setOnMenuItemClickListener {
                 when (it.itemId) {
                     R.id.data_user -> {
-                        val intent = Intent(this, UserDataActivity::class.java)
-                        startActivity(intent)
+                        startActivity(UserDataActivity.newIntent(this))
                         finish()
                     }
 
@@ -242,93 +191,34 @@ class MainActivity : AppCompatActivity() {
                 }
                 true
             }
-
         }
 
         binding.textCity.setOnClickListener {
-            val intent = Intent(this@MainActivity, UserDataActivity::class.java)
-            startActivity(intent)
+            startActivity(UserDataActivity.newIntent(this))
             finish()
         }
 
         binding.imageProfileChatMessage.setOnClickListener {
-            val intent = Intent(this@MainActivity, UserDataActivity::class.java)
-            startActivity(intent)
+            startActivity(UserDataActivity.newIntent(this))
             finish()
         }
 
-    }
-
-    private fun uploadVoiceToStorage(uri: Uri, messageKey: String, type: String) {
-        val path = storage.child(KEY_FILE_URL).child(messageKey)
-        path.putFile(uri)
-            .addOnSuccessListener {
-                path.downloadUrl
-                    .addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            val fileUrl = it.result.toString()
-                            user.fileUrl = fileUrl
-                            database.child(KEY_COLLECTION_USERS).child(uid).child(KEY_FILE_URL)
-                                .setValue(fileUrl)
-                            val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
-                            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
-                                .child(messageKey).setValue(
-                                    User(
-                                        user.username,
-                                        "",
-                                        type,
-                                        user.photoUrl,
-                                        fileUrl,
-                                        messageKey,
-                                        user.city,
-                                        System.currentTimeMillis()
-                                    )
-                                )
-                            refVoiceNotification.addChildEventListener(notificationVoiceListener)
-                        }
-                    }
-                    .addOnFailureListener {
-                    }
-            }
-            .addOnFailureListener {
-            }
     }
 
     private fun initUser() {
         viewModel.initUserData(
             binding.imageProfileChatMessage,
-            binding.textCity,
-            preferenceManager.getString(KEY_PREFERENCE_NAME).toString(),
-            preferenceManager.getString(KEY_PREFERENCE_NAME) == null
+            binding.textCity
         ) {
             user = it.getValue(User::class.java) ?: User()
         }
     }
 
     private fun initRCView() {
-        adapter = ChatAdapter()
-        binding.chatRecyclerView.adapter = adapter
-        val linearLayoutManager = LinearLayoutManager(this@MainActivity)
-        binding.chatRecyclerView.layoutManager = linearLayoutManager
-        val cityValue = preferenceManager.getString(KEY_PREFERENCE_NAME)
-        refMessages =
-            database.child(KEY_PREFERENCE_NAME).child(cityValue.toString())
-        messagesListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (userSnapshot: DataSnapshot in snapshot.children) {
-                    val message = userSnapshot.getValue(User::class.java) ?: User()
-                    adapter.setList(ViewFactory.getType(message)) {
-                        binding.chatRecyclerView.smoothScrollToPosition(adapter.itemCount)
-
-                    }
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-            }
-        }
-        refMessages.addValueEventListener(messagesListener)
-
+        viewModel.initRCView(
+            binding.chatRecyclerView,
+            LinearLayoutManager(this@MainActivity)
+        )
     }
 
     private fun checkPermission(permission: String): Boolean {
@@ -356,14 +246,9 @@ class MainActivity : AppCompatActivity() {
         refVoiceNotification.removeEventListener(notificationVoiceListener)
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
 
-    }
-
-    fun showToast(message: String) {
-        val toast = Toast.makeText(applicationContext, message, Toast.LENGTH_LONG)
-        toast.setGravity(Gravity.CENTER, 0, 0)
-        toast.show()
     }
 
     companion object {

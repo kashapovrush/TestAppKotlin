@@ -11,9 +11,7 @@ import javax.inject.Inject
 class SendTextMessageUseCase @Inject constructor(private val repository: MainRepository) {
 
     operator fun invoke(
-        isEmptyEditText: Boolean,
         editText: EditText,
-        cityValue: String,
         addChildEventListener: () -> Unit,
         context: Context,
         messageKey: String,
@@ -21,9 +19,7 @@ class SendTextMessageUseCase @Inject constructor(private val repository: MainRep
         time: Long
     ) {
         repository.sendTextMessage(
-            isEmptyEditText,
             editText,
-            cityValue,
             addChildEventListener,
             context,
             messageKey,
