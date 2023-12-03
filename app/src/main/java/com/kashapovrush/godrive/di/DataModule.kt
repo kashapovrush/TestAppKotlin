@@ -1,7 +1,9 @@
 package com.kashapovrush.godrive.di
 
+import com.kashapovrush.godrive.data.repository.MainRepositoryImpl
 import com.kashapovrush.godrive.data.repository.UserDataRepositoryImpl
 import com.kashapovrush.godrive.data.repository.SignRepositoryImpl
+import com.kashapovrush.godrive.domain.mainChat.MainRepository
 import com.kashapovrush.godrive.domain.userData.UserDataRepository
 import com.kashapovrush.godrive.domain.sign.SignRepository
 import dagger.Binds
@@ -16,8 +18,9 @@ interface DataModule {
 
     @ApplicationScope
     @Binds
-    fun bindMainRepository(impl: UserDataRepositoryImpl): UserDataRepository
+    fun bindUserDataRepository(impl: UserDataRepositoryImpl): UserDataRepository
 
-
-
+    @ApplicationScope
+    @Binds
+    fun bindMainRepository(impl: MainRepositoryImpl): MainRepository
 }

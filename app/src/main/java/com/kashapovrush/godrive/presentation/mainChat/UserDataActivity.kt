@@ -83,9 +83,9 @@ class UserDataActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.initUserData(
-                binding.choiseCity,
-        binding.imageProfile,
-        preferenceManager.getString(KEY_PREFERENCE_NAME) != null
+            binding.choiseCity,
+            binding.imageProfile,
+            preferenceManager.getString(KEY_PREFERENCE_NAME) != null
         )
 
         var arrayAdapter = ArrayAdapter(
