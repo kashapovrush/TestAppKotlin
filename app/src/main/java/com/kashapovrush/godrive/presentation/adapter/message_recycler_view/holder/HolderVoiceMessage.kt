@@ -1,5 +1,6 @@
 package com.kashapovrush.godrive.presentation.adapter.message_recycler_view.holder
 
+import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -8,14 +9,14 @@ import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.view.
 import com.kashapovrush.godrive.databinding.MessageVoiceItemBinding
 import com.kashapovrush.godrive.utilities.VoicePlayer
 
-class HolderVoiceMessage(binding: MessageVoiceItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class HolderVoiceMessage(binding: MessageVoiceItemBinding, private val context: Context) : RecyclerView.ViewHolder(binding.root) {
 
     val dateMessageVoice: TextView = binding.timeMessageVoice
     val buttonPlayVoice: ImageView = binding.imagePlayVoice
     val buttonStopVoice: ImageView = binding.imageStopVoice
     val imageProfileMessageVoice: ImageView = binding.imageProfileMessageVoice
 
-    private val voicePlayer = VoicePlayer()
+    private val voicePlayer = VoicePlayer(context)
 
     fun onAttach(view: MessageView) {
         voicePlayer.init()

@@ -1,19 +1,19 @@
 package com.kashapovrush.godrive.utilities
 
+import android.content.Context
 import android.media.MediaPlayer
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.kashapovrush.godrive.utilities.Constants.Companion.mainActivity
 import java.io.File
 
-class VoicePlayer {
+class VoicePlayer(private val context: Context) {
 
     private lateinit var file: File
     private lateinit var mediaPlayer: MediaPlayer
     private val storage: StorageReference = FirebaseStorage.getInstance().reference
 
     fun play(messageKey: String, fileUrl: String, function: () -> Unit) {
-        file = File(mainActivity.filesDir, messageKey)
+        file = File(context.filesDir, messageKey)
         if (file.exists() && file.length() > 0 && file.isFile) {
             try {
                 mediaPlayer.setDataSource(file.absolutePath)

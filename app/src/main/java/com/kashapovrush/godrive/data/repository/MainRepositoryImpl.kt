@@ -40,7 +40,7 @@ class MainRepositoryImpl @Inject constructor(contextApp: Context) :
     MainRepository {
 
     private var auth = Firebase.auth
-    private val voiceRecorder = VoiceRecorder()
+    private val voiceRecorder = VoiceRecorder(contextApp)
     val preferenceManager = PreferenceManager(contextApp)
 
     override fun getAuth(): FirebaseAuth {
@@ -227,10 +227,11 @@ class MainRepositoryImpl @Inject constructor(contextApp: Context) :
 
     override fun initRCView(
         rv: RecyclerView,
-        llm: LinearLayoutManager
+        llm: LinearLayoutManager,
+        context: Context
     ) {
         val database = FirebaseDatabase.getInstance().reference
-        val adapter = ChatAdapter()
+        val adapter = ChatAdapter(context)
         rv.adapter = adapter
         rv.layoutManager = llm
         val cityValue = preferenceManager.getString(Constants.KEY_PREFERENCE_NAME)

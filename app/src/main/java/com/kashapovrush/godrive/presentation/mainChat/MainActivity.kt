@@ -26,7 +26,6 @@ import com.kashapovrush.godrive.presentation.Application
 import com.kashapovrush.godrive.presentation.NotificationSettings
 import com.kashapovrush.godrive.presentation.ViewModelFactory
 import com.kashapovrush.godrive.presentation.sign.SignInActivity
-import com.kashapovrush.godrive.utilities.Constants.Companion.mainActivity
 import com.kashapovrush.godrive.utilities.VoiceRecorder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,8 +65,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
-        mainActivity = this@MainActivity
-        voiceRecorder = VoiceRecorder()
+        voiceRecorder = VoiceRecorder(this@MainActivity)
         auth = viewModel.getAuth()
         uid = viewModel.getUid()
         storage = viewModel.getStorageReference()
@@ -217,7 +215,8 @@ class MainActivity : AppCompatActivity() {
     private fun initRCView() {
         viewModel.initRCView(
             binding.chatRecyclerView,
-            LinearLayoutManager(this@MainActivity)
+            LinearLayoutManager(this@MainActivity),
+            this@MainActivity
         )
     }
 

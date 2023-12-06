@@ -56,7 +56,7 @@ class FreeChatActivity : AppCompatActivity() {
 
 
     private fun initRCView() {
-        adapter = ChatAdapter()
+        adapter = ChatAdapter(this@FreeChatActivity)
         binding.freeChatRecyclerView.adapter = adapter
         val linearLayoutManager = LinearLayoutManager(this@FreeChatActivity)
         binding.freeChatRecyclerView.layoutManager = linearLayoutManager

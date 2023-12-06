@@ -148,7 +148,7 @@ class MainViewModel @Inject constructor(
         return getReferenceNotificationUseCase()
     }
 
-    fun initRCView(rv: RecyclerView, llm: LinearLayoutManager) {
-        initRCViewUseCase(rv, llm)
+    fun initRCView(rv: RecyclerView, llm: LinearLayoutManager, context: Context) {
+        initRCViewUseCase(rv, llm, context)
     }
 }

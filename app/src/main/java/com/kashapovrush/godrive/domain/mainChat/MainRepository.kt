@@ -66,6 +66,6 @@ interface MainRepository {
 
     fun getReferenceNotification(): DatabaseReference
 
-    fun initRCView(rv: RecyclerView, llm: LinearLayoutManager)
+    fun initRCView(rv: RecyclerView, llm: LinearLayoutManager, context: Context)
 
 }

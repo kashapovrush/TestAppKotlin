@@ -28,8 +28,6 @@ class Constants {
         const val KEY_NOTIFICATION_STATE = "notification_state"
         const val KEY_TOKEN = "dCimcfUyTj2rArJ9p2Y41p:APA91bGL1qX742A09bfGSAJ88l6DIvvulf5VzejBexNF8uaMztB_7PFzjpLHjtd_JEJ6PDGUQZNuHxjdYaVhe3iXO48rP-8p3Grvr-F-2L1hcuhlS3Ge7txg9770Zr9qR5FEhEU1vdx9"
 
-        lateinit var mainActivity: MainActivity
-
         const val BASE_PHOTO_URL =
             "https://firebasestorage.googleapis.com/v0/b/godrivekotlin-27458.appspot.com/o/profile_image%2Fbase_photo2.jpeg?alt=media&token=ac9642a9-aa50-40ab-8054-598ff3a401d2"
     }

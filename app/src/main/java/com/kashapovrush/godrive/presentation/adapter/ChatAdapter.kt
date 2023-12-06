@@ -1,5 +1,6 @@
 package com.kashapovrush.godrive.presentation.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -15,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class ChatAdapter(private val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var listMessage = mutableListOf<MessageView>()
 
@@ -27,7 +28,7 @@ class ChatAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         LayoutInflater.from(parent.context),
                         parent,
                         false
-                    )
+                    ), context
                 )
             }
             else -> {
