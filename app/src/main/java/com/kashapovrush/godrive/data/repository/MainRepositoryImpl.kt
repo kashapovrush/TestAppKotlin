@@ -27,7 +27,7 @@ import com.google.firebase.storage.StorageReference
 import com.kashapovrush.godrive.domain.mainChat.MainRepository
 import com.kashapovrush.godrive.domain.models.Notification
 import com.kashapovrush.godrive.domain.models.User
-import com.kashapovrush.godrive.presentation.adapter.ChatAdapter
+import com.kashapovrush.godrive.data.adapter.ChatAdapter
 import com.kashapovrush.godrive.utilities.Constants
 import com.kashapovrush.godrive.utilities.PreferenceManager
 import com.kashapovrush.godrive.utilities.SendNotification

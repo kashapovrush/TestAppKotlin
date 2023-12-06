@@ -1,11 +1,11 @@
-package com.kashapovrush.godrive.presentation.adapter.message_recycler_view.holder
+package com.kashapovrush.godrive.data.adapter.message_recycler_view.holder
 
 import android.content.Context
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.view.MessageView
+import com.kashapovrush.godrive.data.adapter.message_recycler_view.view.MessageView
 import com.kashapovrush.godrive.databinding.MessageVoiceItemBinding
 import com.kashapovrush.godrive.utilities.VoicePlayer
 

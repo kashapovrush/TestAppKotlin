@@ -1,4 +1,4 @@
-package com.kashapovrush.godrive.presentation.adapter.message_recycler_view.view
+package com.kashapovrush.godrive.data.adapter.message_recycler_view.view
 
 interface MessageView {
     val username: String

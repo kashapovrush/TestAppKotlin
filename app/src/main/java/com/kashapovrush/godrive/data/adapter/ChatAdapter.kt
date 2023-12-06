@@ -1,13 +1,13 @@
-package com.kashapovrush.godrive.presentation.adapter
+package com.kashapovrush.godrive.data.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.holder.HolderTextMessage
-import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.holder.HolderVoiceMessage
-import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.view.MessageView
+import com.kashapovrush.godrive.data.adapter.message_recycler_view.holder.HolderTextMessage
+import com.kashapovrush.godrive.data.adapter.message_recycler_view.holder.HolderVoiceMessage
+import com.kashapovrush.godrive.data.adapter.message_recycler_view.view.MessageView
 import com.kashapovrush.godrive.databinding.MessageTextItemBinding
 import com.kashapovrush.godrive.databinding.MessageVoiceItemBinding
 import com.kashapovrush.godrive.utilities.Constants.Companion.BASE_PHOTO_URL

@@ -10,7 +10,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.ktx.Firebase
 import com.kashapovrush.godrive.presentation.sign.SignInActivity
-import com.kashapovrush.godrive.presentation.adapter.ChatAdapter
+import com.kashapovrush.godrive.data.adapter.ChatAdapter
 import com.kashapovrush.godrive.databinding.ActivityFreeChatBinding
 import com.kashapovrush.godrive.domain.models.User
 import com.kashapovrush.godrive.utilities.Constants

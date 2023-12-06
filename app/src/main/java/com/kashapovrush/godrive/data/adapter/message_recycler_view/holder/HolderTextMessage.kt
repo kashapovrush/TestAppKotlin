@@ -1,4 +1,4 @@
-package com.kashapovrush.godrive.presentation.adapter.message_recycler_view.holder
+package com.kashapovrush.godrive.data.adapter.message_recycler_view.holder
 
 import android.widget.ImageView
 import android.widget.TextView
