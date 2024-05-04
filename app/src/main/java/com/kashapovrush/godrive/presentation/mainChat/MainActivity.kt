@@ -42,11 +42,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var user: User
     private lateinit var notification: Notification
     private lateinit var database: DatabaseReference
-    private lateinit var refMessages: DatabaseReference
+//    private lateinit var refMessages: DatabaseReference
     private lateinit var refTextNotification: DatabaseReference
     private lateinit var refVoiceNotification: DatabaseReference
     private lateinit var voiceRecorder: VoiceRecorder
-    private lateinit var messagesListener: ValueEventListener
+//    private lateinit var messagesListener: ValueEventListener
     private lateinit var notificationTextListener: ChildEventListener
     private lateinit var notificationVoiceListener: ChildEventListener
     private lateinit var uid: String
@@ -241,7 +241,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        refMessages.removeEventListener(messagesListener)
+//        refMessages.removeEventListener(messagesListener)
         refTextNotification.removeEventListener(notificationTextListener)
         refVoiceNotification.removeEventListener(notificationVoiceListener)
     }

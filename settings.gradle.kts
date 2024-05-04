@@ -1,3 +1,5 @@
+
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -13,5 +15,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+//enableFeaturePreview("VERSION_CATALOGS")
 rootProject.name = "goDriveKotlin"
-include ':app'
+include (":app")

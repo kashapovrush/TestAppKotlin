@@ -1,0 +1,110 @@
+[versions]
+agp = "8.2.2"
+androidImageCropper = "2.8.0"
+kotlin = "1.9.21"
+coreKtx = "1.13.0"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+appcompat = "1.6.1"
+material = "1.11.0"
+activity = "1.9.0"
+constraintlayout = "2.1.4"
+multidex = "2.0.1"
+picasso = "2.71828"
+retrofit = "2.11.0"
+gson = "2.10.1"
+dagger = "2.48.1"
+ksp = "1.9.22-1.0.16"
+okhttp = "4.11.0"
+coroutine = "1.8.0"
+lifecicle = "2.7.0"
+room = "2.6.1"
+lottie = "3.4.0"
+google = "4.3.15"
+googleAuth = "20.7.0"
+browser = "1.7.0"
+googleSafetynet = "18.0.1"
+roundedimageview = "2.3.0"
+sdpAndroid = "1.1.0"
+firebase = "33.0.0"
+volley = "1.2.1"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+
+# Retrofit
+retrofit-core = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
+
+# Dagger
+dagger-core = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+dagger-compiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
+
+# OkHttp logging
+okhttp-logging = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+# Coroutines
+coroutine-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutine" }
+coroutine-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutine" }
+
+# Lifecycle
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecicle" }
+lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecicle" }
+lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecicle" }
+
+# Room
+room-core = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# Lottie
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+
+# Browser
+browser = { group = "androidx.browser", name = "browser", version.ref = "browser"}
+
+# Google service
+google-service-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "googleAuth" }
+google-service-safetynet = {group = "com.google.android.gms", name = "play-services-safetynet", version.ref = "googleSafetynet"}
+
+# Scalable Size Unit
+android-sdp = { module = "com.intuit.sdp:sdp-android", version.ref = "sdpAndroid" }
+android-ssp = { module = "com.intuit.ssp:ssp-android", version.ref = "sdpAndroid" }
+
+#Multidex
+androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
+
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase"}
+firebase-storage-ktx = {group = "com.google.firebase", name = "firebase-storage-ktx"}
+firebase-database-ktx = {group = "com.google.firebase", name = "firebase-database-ktx"}
+firebase-auth-ktx = {group = "com.google.firebase", name = "firebase-auth-ktx"}
+firebase-messaging = {group = "com.google.firebase", name = "firebase-messaging"}
+firebase-appcheck-playintegrity = {group = "com.google.firebase", name = "firebase-appcheck-playintegrity"}
+firebase-messaging-ktx = {group = "com.google.firebase", name = "firebase-messaging-ktx"}
+
+# Image
+roundedimageview = { module = "com.makeramen:roundedimageview", version.ref = "roundedimageview" }
+android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
+picasso = { module = "com.squareup.picasso:picasso", version.ref = "picasso" }
+
+# Volley
+volley-core = { module = "com.android.volley:volley", version.ref = "volley" }
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google" }
