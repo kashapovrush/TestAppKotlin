@@ -10,6 +10,16 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/features-mobile" />
+            <option value="$PROJECT_DIR$/features-mobile/enter-code-feature" />
+            <option value="$PROJECT_DIR$/features-mobile/free-chat-feature" />
+            <option value="$PROJECT_DIR$/features-mobile/main-chat-feature" />
+            <option value="$PROJECT_DIR$/features-mobile/palette" />
+            <option value="$PROJECT_DIR$/features-mobile/profile-feature" />
+            <option value="$PROJECT_DIR$/features-mobile/profile-free-feature" />
+            <option value="$PROJECT_DIR$/features-mobile/settings-feature" />
+            <option value="$PROJECT_DIR$/features-mobile/sign-up-feature" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

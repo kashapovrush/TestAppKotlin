@@ -10,8 +10,8 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:allowBackup="true"
         android:name=".presentation.Application"
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_logo_new"
@@ -20,6 +20,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GoDriveKotlin"
         tools:targetApi="31">
+        <activity
+            android:name=".presentation.MainActivity"
+            android:exported="true"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.GoDriveKotlin">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".presentation.AppStatistics"
             android:exported="false" />
@@ -55,10 +66,10 @@
             android:name=".presentation.mainChat.MainActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustResize"/>
 
         <service
-            android:name="com.kashapovrush.godrive.service.ServiceMessaging"
+            android:name=".service.ServiceMessaging"
             android:exported="false"
             android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
