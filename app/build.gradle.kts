@@ -73,6 +73,7 @@ dependencies {
     implementation(project(":features-mobile:enter-code-feature"))
     implementation(project(":features-mobile:settings-feature"))
     implementation(project(":features-mobile:palette"))
+    implementation(project(":core:navigation"))
 
 
 
@@ -136,5 +137,6 @@ dependencies {
     implementation(libs.dagger.core)
     ksp(libs.dagger.compiler)
 
+    implementation(libs.navigation.ui.compose)
 
 }

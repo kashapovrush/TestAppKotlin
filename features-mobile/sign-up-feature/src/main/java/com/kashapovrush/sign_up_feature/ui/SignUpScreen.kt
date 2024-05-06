@@ -33,10 +33,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kashapovrush.navigation.NavigationState
+import com.kashapovrush.navigation.ScreenState
 
-@Preview
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(navigationState: NavigationState) {
 
     Column(
         modifier = Modifier
@@ -88,7 +89,7 @@ fun SignUpScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navigationState.navigateTo(ScreenState.EnterCodeScreen.route) },
             enabled = inputNumberPhone.value.length == 10,
             modifier = Modifier
                 .width(300.dp)

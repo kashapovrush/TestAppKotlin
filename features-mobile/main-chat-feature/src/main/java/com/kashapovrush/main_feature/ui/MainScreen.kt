@@ -1,7 +1,16 @@
 package com.kashapovrush.main_feature.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,9 +31,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChatBubbleOutline
 import androidx.compose.material.icons.filled.KeyboardVoice
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Message
+import androidx.compose.material.icons.filled.Output
 import androidx.compose.material.icons.filled.PeopleAlt
 import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Send
@@ -34,10 +45,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -45,10 +59,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun MainScreen() {
@@ -72,67 +86,23 @@ fun MainScreen() {
             items(3) {
                 ReceiverTextMessage()
             }
-            item {
-                ReceiverVoiceMessage()
-            }
-            item {
-                ReceiverTextMessage()
-            }
-
-            item { SendTextMessage() }
-            item { SendVoiceMessage() }
-            item {
-                ReceiverVoiceMessage()
-            }
-            item {
-                ReceiverTextMessage()
-            }
-            items(3) {
-                ReceiverTextMessage()
-            }
         }
 
         val messageState = remember { mutableStateOf("") }
+        val bottomNavigationState = remember { mutableStateOf(false) }
+        val visibleState =
+            animateFloatAsState(
+                targetValue = if (!bottomNavigationState.value) 1f else 0f,
+                animationSpec = tween(1000)
+            )
         Row(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.primary)
                 .fillMaxWidth()
                 .height(60.dp),
-            horizontalArrangement = Arrangement.SpaceAround,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-//            OutlinedTextField(value = messageState.value, onValueChange = {
-//                messageState.value = it
-//            })
-
-            BasicTextField(
-                value = messageState.value, onValueChange = { newValue ->
-                    messageState.value = newValue
-                }, modifier = Modifier
-                    .width(300.dp)
-                    .padding(horizontal = 8.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.secondary)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                cursorBrush = SolidColor(Color.White),
-                decorationBox = { innerTextField ->
-                    if (messageState.value.isEmpty()) {
-                        Text(
-                            text = "Сообщение",
-                            color = Color.White,
-                            fontSize = 18.sp
-                        )
-                    } else {
-                        innerTextField()
-                    }
-                },
-                textStyle = TextStyle(
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Left,
-                    color = Color.White
-                )
-            )
 
             Box(
                 modifier = Modifier
@@ -141,26 +111,135 @@ fun MainScreen() {
                     .padding(8.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.secondary)
-                    .padding(8.dp),
+                    .padding(2.dp)
+                    .clickable { bottomNavigationState.value = !bottomNavigationState.value },
                 contentAlignment = Alignment.Center
             ) {
-                if (messageState.value.isEmpty()) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardVoice,
-                        contentDescription = null,
-                        modifier = Modifier.size(36.dp),
-                        tint = Color.White
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = null,
-                        modifier = Modifier.size(36.dp),
-                        tint = Color.White
-                    )
-                }
+
+                Icon(
+                    imageVector = if (bottomNavigationState.value) Icons.Default.Message else Icons.Default.Menu,
+                    tint = Color.White,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            if (!bottomNavigationState.value) {
+                InputTextMessage(messageState = messageState, visibleState = visibleState)
+            } else {
+                AnimatedMenu()
             }
         }
+    }
+}
+
+@Composable
+fun AnimatedMenu() {
+    val stateAnimation = remember {
+        MutableTransitionState(false).apply {
+            targetState = true
+        }
+    }
+
+    AnimatedVisibility(
+        visibleState = stateAnimation,
+        enter = fadeIn(animationSpec = tween(500)) + slideIn(
+            animationSpec = tween(500),
+            initialOffset = { IntOffset(it.width, 0) }),
+        exit = fadeOut(animationSpec = tween(500)) + shrinkOut(
+            animationSpec = tween(500),
+        )
+    ) {
+        Menu()
+    }
+}
+
+@Preview
+@Composable
+fun Menu() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Absolute.SpaceEvenly
+    ) {
+        IconInCircle(image = Icons.Default.PeopleAlt)
+        IconInCircle(image = Icons.Default.Settings)
+        IconInCircle(image = Icons.Default.Output)
+    }
+}
+
+@Composable
+fun IconInCircle(image: ImageVector) {
+    Box(
+        modifier = Modifier
+            .height(60.dp)
+            .width(60.dp)
+            .padding(8.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(2.dp),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Icon(
+            imageVector = image,
+            tint = Color.White,
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+@Composable
+private fun InputTextMessage(messageState: MutableState<String>, visibleState: State<Float>) {
+    BasicTextField(
+        value = messageState.value, onValueChange = { newValue ->
+            messageState.value = newValue
+        }, modifier = Modifier
+            .alpha(visibleState.value)
+            .width(220.dp)
+//            .padding(horizontal = 2.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(vertical = 8.dp)
+            ,
+        cursorBrush = SolidColor(Color.White),
+        decorationBox = { innerTextField ->
+            if (messageState.value.isEmpty()) {
+                Text(
+                    text = "Сообщение",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            } else {
+                innerTextField()
+            }
+        },
+        textStyle = TextStyle(
+            fontSize = 18.sp,
+            textAlign = TextAlign.Left,
+            color = Color.White
+        )
+    )
+
+    Box(
+        modifier = Modifier
+            .alpha(visibleState.value)
+            .height(60.dp)
+            .width(60.dp)
+            .padding(8.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(8.dp)
+            ,
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = if (messageState.value.isEmpty()) Icons.Default.KeyboardVoice else Icons.Default.Send,
+            contentDescription = null,
+            modifier = Modifier.size(36.dp),
+            tint = Color.White
+        )
+
     }
 }
 
@@ -220,15 +299,6 @@ private fun TopBar() {
                 .size(36.dp)
                 .align(Alignment.CenterEnd)
 
-        )
-
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier
-                .size(36.dp)
-                .align(Alignment.CenterStart)
         )
         Text(
             text = "Выберите город",
