@@ -29,7 +29,10 @@ android {
         versionName = "1.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-//        signingConfig signingConfigs.release
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+        //        signingConfig signingConfigs.release
     }
 
     buildTypes {
@@ -47,17 +50,50 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.7"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
+
+    implementation(project(":features-mobile:sign-up-feature"))
+    implementation(project(":features-mobile:profile-feature"))
+    implementation(project(":features-mobile:profile-free-feature"))
+    implementation(project(":features-mobile:main-chat-feature"))
+    implementation(project(":features-mobile:free-chat-feature"))
+    implementation(project(":features-mobile:enter-code-feature"))
+    implementation(project(":features-mobile:settings-feature"))
+    implementation(project(":features-mobile:palette"))
+
+
+
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3.extended)
+    implementation(libs.lifecycle.runtime)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.google.service.auth)
-//    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation(libs.browser)
     implementation(libs.google.service.safetynet)
 
