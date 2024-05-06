@@ -28,10 +28,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kashapovrush.navigation.NavigationState
+import com.kashapovrush.navigation.ScreenState
 
-@Preview
 @Composable
-fun EnterCodeScreen() {
+fun EnterCodeScreen(navigationState: NavigationState) {
 
     Column(
         modifier = Modifier
@@ -70,7 +71,7 @@ fun EnterCodeScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { navigationState.navigateTo(ScreenState.MainChatScreen.route)},
             modifier = Modifier
                 .width(300.dp)
                 .height(50.dp),

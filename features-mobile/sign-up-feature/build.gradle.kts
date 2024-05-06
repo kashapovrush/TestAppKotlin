@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":features-mobile:palette"))
+    implementation(project(":core:navigation"))
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
