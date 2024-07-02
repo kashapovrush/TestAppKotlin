@@ -4,7 +4,7 @@ import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.view.
 import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.view.ViewTextMessage
 import com.kashapovrush.godrive.presentation.adapter.message_recycler_view.view.ViewVoiceMessage
 import com.kashapovrush.godrive.domain.models.User
-import com.kashapovrush.godrive.utilities.Constants.Companion.TYPE_VOICE
+import com.kashapovrush.utils.constants.Constants.Companion.TYPE_VOICE
 
 class ViewFactory {
     companion object {

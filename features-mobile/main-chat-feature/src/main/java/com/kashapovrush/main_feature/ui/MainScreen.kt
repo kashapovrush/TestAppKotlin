@@ -62,10 +62,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kashapovrush.navigation.NavigationState
+import com.kashapovrush.navigation.ScreenState
 
-@Preview
 @Composable
-fun MainScreen() {
+fun MainScreen(navigationState: NavigationState) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -126,14 +127,14 @@ fun MainScreen() {
             if (!bottomNavigationState.value) {
                 InputTextMessage(messageState = messageState, visibleState = visibleState)
             } else {
-                AnimatedMenu()
+                AnimatedMenu(navigationState = navigationState)
             }
         }
     }
 }
 
 @Composable
-fun AnimatedMenu() {
+fun AnimatedMenu(navigationState: NavigationState) {
     val stateAnimation = remember {
         MutableTransitionState(false).apply {
             targetState = true
@@ -149,25 +150,30 @@ fun AnimatedMenu() {
             animationSpec = tween(500),
         )
     ) {
-        Menu()
+        Menu(navigationState = navigationState)
     }
 }
 
-@Preview
 @Composable
-fun Menu() {
+fun Menu(navigationState: NavigationState) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Absolute.SpaceEvenly
     ) {
-        IconInCircle(image = Icons.Default.PeopleAlt)
-        IconInCircle(image = Icons.Default.Settings)
-        IconInCircle(image = Icons.Default.Output)
+        IconInCircle(image = Icons.Default.PeopleAlt) {
+            navigationState.navigateTo(ScreenState.ProfileScreen.route)
+        }
+        IconInCircle(image = Icons.Default.Settings) {
+            navigationState.navigateTo(ScreenState.SettingsScreen.route)
+        }
+        IconInCircle(image = Icons.Default.Output) {
+
+        }
     }
 }
 
 @Composable
-fun IconInCircle(image: ImageVector) {
+fun IconInCircle(image: ImageVector, navigateTo: () -> Unit) {
     Box(
         modifier = Modifier
             .height(60.dp)
@@ -175,7 +181,8 @@ fun IconInCircle(image: ImageVector) {
             .padding(8.dp)
             .clip(CircleShape)
             .background(MaterialTheme.colorScheme.secondary)
-            .padding(2.dp),
+            .padding(2.dp)
+            .clickable { navigateTo() },
         contentAlignment = Alignment.Center
     ) {
 

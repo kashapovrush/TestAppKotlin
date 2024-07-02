@@ -1,5 +1,6 @@
 package com.kashapovrush.profile_feature.ui
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,10 +39,10 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.window.SecureFlagPolicy
+import com.kashapovrush.profile_feature.viewmodel.ProfileViewModel
 
-@Preview
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(viewModel: ProfileViewModel) {
 
     val items = listOf(
         "Выберите город",
@@ -111,6 +112,7 @@ fun ProfileScreen() {
                     DropdownMenuItem(text = { Text(text = title) }, onClick = {
                         selectedIndex = index
                         expanded = false
+                        viewModel.selectedCity(items[index])
                     },
                         modifier = Modifier.width(200.dp))
                 }

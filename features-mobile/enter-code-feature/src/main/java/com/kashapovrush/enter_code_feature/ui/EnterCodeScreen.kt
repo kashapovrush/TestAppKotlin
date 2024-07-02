@@ -1,5 +1,8 @@
 package com.kashapovrush.enter_code_feature.ui
 
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,20 +23,57 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.kashapovrush.enter_code_feature.viewmodel.EnterCodeViewModel
 import com.kashapovrush.navigation.NavigationState
 import com.kashapovrush.navigation.ScreenState
 
 @Composable
-fun EnterCodeScreen(navigationState: NavigationState) {
+fun EnterCodeScreen(navigationState: NavigationState, viewModel: EnterCodeViewModel, id: String) {
+    Log.d("MainActivityTest", "recomposition")
+    val context = LocalContext.current
+    val inputCode = remember { mutableStateOf("") }
 
+    val state = viewModel.stateScreen.collectAsState(StateEnterCodeScreen.Initial)
+    val currentScreen = state.value
+
+    SetFunc(currentScreen, context, navigationState, inputCode, viewModel, id)
+
+}
+
+@Composable
+private fun SetFunc(
+    currentScreen: StateEnterCodeScreen,
+    context: Context,
+    navigationState: NavigationState,
+    inputCode: MutableState<String>,
+    viewModel: EnterCodeViewModel,
+    id: String
+) {
+    when (currentScreen) {
+
+        is StateEnterCodeScreen.Error -> {
+            Toast.makeText(
+                context,
+                currentScreen.error,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        StateEnterCodeScreen.Initial -> {}
+        StateEnterCodeScreen.Success -> {
+            navigationState.navigateTo(ScreenState.MainChatScreen.route)
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -45,33 +85,13 @@ fun EnterCodeScreen(navigationState: NavigationState) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        val inputCode = remember { mutableStateOf("") }
-
-        OutlinedTextField(
-            value = inputCode.value,
-            maxLines = 1,
-            onValueChange = { newValue ->
-                inputCode.value = newValue
-            },
-            modifier = Modifier
-                .padding(16.dp)
-                .width(300.dp),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clickable { inputCode.value = "" }
-                )
-
-            }
-        )
+        SetEditText(inputCode)
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { navigationState.navigateTo(ScreenState.MainChatScreen.route)},
+            onClick = {
+                viewModel.signInWithCredential(inputCode.value, id)
+            },
             modifier = Modifier
                 .width(300.dp)
                 .height(50.dp),
@@ -88,7 +108,31 @@ fun EnterCodeScreen(navigationState: NavigationState) {
 
 
     }
+}
 
+@Composable
+private fun SetEditText(inputCode: MutableState<String>) {
+    OutlinedTextField(
+        value = inputCode.value,
+        maxLines = 1,
+        onValueChange = { newValue ->
+            inputCode.value = newValue
+        },
+        modifier = Modifier
+            .padding(16.dp)
+            .width(300.dp),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp)
+                    .clickable { inputCode.value = "" }
+            )
+
+        }
+    )
 }
 
 

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -43,6 +44,7 @@ android {
 dependencies {
     implementation(project(":features-mobile:palette"))
     implementation(project(":core:navigation"))
+    implementation(project(":core:authorization:authorization-api"))
 
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
@@ -62,4 +64,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.dagger.core)
+    ksp(libs.dagger.compiler)
 }

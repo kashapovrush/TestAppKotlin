@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.auth.api.signin.internal.Storage
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -20,11 +19,10 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.kashapovrush.godrive.data.database.AppDatabase
 import com.kashapovrush.godrive.domain.userData.UserDataRepository
 import com.kashapovrush.godrive.domain.models.Notification
 import com.kashapovrush.godrive.domain.models.User
-import com.kashapovrush.godrive.utilities.Constants
+import com.kashapovrush.utils.constants.Constants
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView

@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -41,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":features-mobile:palette"))
+    implementation(project(":core:settings:settings-api"))
 
 
     implementation(libs.androidx.activity.compose)
@@ -61,4 +63,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.dagger.core)
+    ksp(libs.dagger.compiler)
 }

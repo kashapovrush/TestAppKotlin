@@ -16,6 +16,10 @@ class NavigationState(val navHostController: NavHostController) {
             restoreState = true
         }
     }
+
+    fun navigateToEnterCodeScreen(id: String) {
+        navHostController.navigate(ScreenState.EnterCodeScreen.getRouteWithArgs(id))
+    }
 }
 
 @Composable

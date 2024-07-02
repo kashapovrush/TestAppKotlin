@@ -74,6 +74,13 @@ dependencies {
     implementation(project(":features-mobile:settings-feature"))
     implementation(project(":features-mobile:palette"))
     implementation(project(":core:navigation"))
+    implementation(project(":core:settings:settings-impl"))
+    implementation(project(":core:settings:settings-api"))
+    implementation(project(":core:utils"))
+    implementation(project(":core:profile:profile-api"))
+    implementation(project(":core:profile:profile-impl"))
+    implementation(project(":core:authorization:authorization-api"))
+    implementation(project(":core:authorization:authorization-impl"))
 
 
 

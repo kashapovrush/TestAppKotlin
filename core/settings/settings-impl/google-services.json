@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "203111369552",
+    "firebase_url": "https://godrivekotlin-27458-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "godrivekotlin-27458",
+    "storage_bucket": "godrivekotlin-27458.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:203111369552:android:8bc3087c18fbfce58e3a55",
+        "android_client_info": {
+          "package_name": "com.kashapovrush.settings_impl"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "203111369552-sbs31u61sio8euf8l2chcfuvihq65ho3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kashapovrush.settings_impl",
+            "certificate_hash": "a3716bcabb067c61afd944692b2b2e5d2db7c65f"
+          }
+        },
+        {
+          "client_id": "203111369552-hnvoo9kl4227s9rc08fscion0b0u7gc8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYH3awcWq2zNP3Sd8ipC8wNNtYmNI3hcs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "203111369552-hnvoo9kl4227s9rc08fscion0b0u7gc8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

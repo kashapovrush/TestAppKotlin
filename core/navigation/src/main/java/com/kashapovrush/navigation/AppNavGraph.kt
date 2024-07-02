@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 fun AppNavGraph(
     navHostController: NavHostController,
     signUpContent: @Composable () -> Unit,
-    enterCodeContent: @Composable () -> Unit,
+    enterCodeContent: @Composable (String) -> Unit,
     freeChatContent: @Composable () -> Unit,
     mainChatContent: @Composable () -> Unit,
     profileContent: @Composable () -> Unit,
@@ -24,7 +24,8 @@ fun AppNavGraph(
         }
 
         composable(ScreenState.EnterCodeScreen.route) {
-            enterCodeContent()
+            val id = it.arguments?.getString("id") ?: ""
+            enterCodeContent(id)
         }
 
         composable(ScreenState.FreeChatScreen.route) {

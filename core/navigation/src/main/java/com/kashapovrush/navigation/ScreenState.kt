@@ -3,7 +3,12 @@ package com.kashapovrush.navigation
 sealed class ScreenState(val route: String) {
 
 
-    data object EnterCodeScreen: ScreenState(ROUTE_ENTER_CODE)
+    data object EnterCodeScreen: ScreenState(ROUTE_ENTER_CODE) {
+        private const val ROUTE_FOR_ID = "enter_code"
+        fun getRouteWithArgs(id :String): String {
+            return "$ROUTE_FOR_ID/$id"
+        }
+    }
     data object FreeChatScreen: ScreenState(ROUTE_FREE_CHAT)
     data object MainChatScreen: ScreenState(ROUTE_MAIN_CHAT)
     data object ProfileScreen: ScreenState(ROUTE_PROFILE)
@@ -15,7 +20,7 @@ sealed class ScreenState(val route: String) {
 
     companion object {
 
-        const val ROUTE_ENTER_CODE = "enter_code"
+        const val ROUTE_ENTER_CODE = "enter_code/{id}"
         const val ROUTE_FREE_CHAT = "free_chat"
         const val ROUTE_MAIN_CHAT = "main_chat"
         const val ROUTE_PROFILE = "profile"
